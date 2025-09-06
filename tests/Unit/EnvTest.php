@@ -44,11 +44,36 @@ class EnvTest extends TestCase
     public function testLoadWithCustomPath(): void
     {
         // Test loading from our test .env file
-        Env::load($this->testEnvPath);
+        $result = Env::load($this->testEnvPath);
         
         // Verify the values were loaded
+        $this->assertTrue($result, 'load() should return true when environment is loaded successfully');
         $this->assertSame('test_value', Env::get('TEST_KEY'));
         $this->assertSame('another_value', Env::get('ANOTHER_KEY'));
+    }
+    
+    public function testLoadWithEmptyFile(): void
+    {
+        // Create an empty .env file
+        $emptyEnvPath = sys_get_temp_dir() . '/.env.empty';
+        file_put_contents($emptyEnvPath, '');
+        
+        $result = Env::load($emptyEnvPath);
+        
+        $this->assertFalse($result, 'load() should return false when loading an empty .env file');
+        
+        // Clean up
+        if (file_exists($emptyEnvPath)) {
+            unlink($emptyEnvPath);
+        }
+    }
+    
+    public function testLoadWithNonExistentFile(): void
+    {
+        $nonExistentPath = '/path/to/nonexistent/.env';
+        $result = Env::load($nonExistentPath);
+        
+        $this->assertFalse($result, 'load() should return false when .env file does not exist');
     }
 
     public function testGetWithDefaultValue(): void

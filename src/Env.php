@@ -6,7 +6,7 @@ use Symfony\Component\Dotenv\Dotenv;
 
 final class Env
 {
-    public static function load(string $path = null): void
+    public static function load(string $path = null): bool
     {
         $vars = (new Dotenv())->usePutenv(true)->load($path);
 
@@ -18,7 +18,7 @@ final class Env
         define('MODE', self::get('MODE'));
         define('DEV', in_array(MODE, ['DEV','LOCAL']));
 
-        return count($vars);
+        return (bool)count($vars);
     }
 
     public static function get(string $key, $default = null)
