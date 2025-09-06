@@ -2,8 +2,6 @@
 
 namespace Stilmark\Base;
 
-use Stilmark\Base\Request;
-
 abstract class Controller
 {
     protected Request $request;
@@ -27,10 +25,7 @@ abstract class Controller
      */
     protected function json($data, int $statusCode = 200): void
     {
-        http_response_code($statusCode);
-        header('Content-Type: application/json');
-        echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        exit;
+        Render::json($data, $statusCode);
     }
 
     /**

@@ -8,7 +8,7 @@ final class Env
 {
     public static function load(string $path = null): void
     {
-        (new Dotenv())->usePutenv(true)->load($path);
+        $vars = (new Dotenv())->usePutenv(true)->load($path);
 
         // Locales
         setlocale(LC_ALL, self::get('LOCALE') ?? 'en_US.UTF8');
@@ -17,6 +17,8 @@ final class Env
         // Set DEV constant
         define('MODE', self::get('MODE'));
         define('DEV', in_array(MODE, ['DEV','LOCAL']));
+
+        return count($vars);
     }
 
     public static function get(string $key, $default = null)
