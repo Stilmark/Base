@@ -6,29 +6,31 @@ namespace Stilmark\Base;
 
 use Stilmark\Base\Env;
 use Stilmark\Base\AuthMiddleware;
+use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-
+use function FastRoute\cachedDispatcher;
 
 class Router {
 
-    // ---------------------
-    // Dispatcher
-    // ---------------------
     public static function dispatch()
     {
-        $dispatcher = FastRoute\cachedDispatcher(
+
+        die(ROOT . Env::get('ROUTES_CACHE_PATH'));
+
+        $dispatcher = cachedDispatcher(
             function (RouteCollector $r) {
-                require __DIR__ . '/routes.php';
+                require ROOT . Env::get('ROUTES_CACHE_PATH');
             },
             [
                 'cacheFile'     => ROOT . Env::get('ROUTES_CACHE_PATH'),
-                'cacheDisabled' => DEV,
+                'cacheDisabled' => defined('DEV') && DEV,
             ]
         );
 
         // ----------------------------------------
         // Dispatch
         // ----------------------------------------
+
         $httpMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $uri = $_SERVER['REQUEST_URI'] ?? '/';
         $path = parse_url($uri, PHP_URL_PATH) ?: '/';
@@ -36,15 +38,15 @@ class Router {
         $routeInfo = $dispatcher->dispatch($httpMethod, $path);
 
         switch ($routeInfo[0]) {
-            case FastRoute\Dispatcher::NOT_FOUND:
+            case Dispatcher::NOT_FOUND:
                 Render::json(['error' => 'Not Found'], 404);
 
-            case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+            case Dispatcher::METHOD_NOT_ALLOWED:
                 $allowed = $routeInfo[1] ?? [];
                 if ($allowed) header('Allow: ' . implode(', ', (array)$allowed));
                 Render::json(['error' => 'Method Not Allowed'], 405);
 
-            case FastRoute\Dispatcher::FOUND:
+            case Dispatcher::FOUND:
                 $handler = (string)$routeInfo[1];
                 $vars    = (array)$routeInfo[2];          // associative: paramName => value
                 $middlewares = $routeInfo[3]['middlewares'] ?? [];

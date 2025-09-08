@@ -2,4 +2,13 @@
 
 include_once 'init.php';
 
-echo Env::get('APP_ENV');
+use Stilmark\Base\Env;
+
+echo Env::get('MODE').PHP_EOL;
+
+Env::set('MODE', 'DEMO');
+
+echo Env::get('MODE').PHP_EOL;
+
+echo Env::get('LOCALE').PHP_EOL;
+
