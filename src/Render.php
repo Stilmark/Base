@@ -4,13 +4,19 @@ namespace Stilmark\Base;
 
 class Render {
 
-    public static function json($data, int $statusCode = 200): void
+    public static function json($data, int $statusCode = 200, bool $prettyPrint = false): void
     {
         if (!headers_sent()) {
             http_response_code($statusCode);
             header('Content-Type: application/json');
         }
-        echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        
+        $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
+        if ($prettyPrint) {
+            $flags |= JSON_PRETTY_PRINT;
+        }
+        
+        echo json_encode($data, $flags).PHP_EOL;
         exit;
     }
 

@@ -79,7 +79,9 @@ class Router {
                         }
                     }
 
-                    Render::json($result, 200);
+                    // Check if we're in development mode for pretty printing
+                    $prettyPrint = defined('DEV') && DEV;
+                    Render::json($result, 200, $prettyPrint);
 
                 } catch (Throwable $e) {
                     Render::json([
