@@ -10,6 +10,11 @@ use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use function FastRoute\cachedDispatcher;
 
+use ReflectionMethod;
+use ReflectionNamedType;
+use Throwable;
+use JsonSerializable;
+
 class Router {
 
     public static function dispatch()
@@ -110,6 +115,8 @@ class Router {
             Render::json(['error' => 'Invalid handler'], 500);
         }
         $class = Env::get('CONTROLLER_NS') . ltrim($classShort, '\\');
+        
+        
         if (!class_exists($class) || !method_exists($class, $method)) {
             Render::json(['error' => 'Handler not found'], 500);
         }

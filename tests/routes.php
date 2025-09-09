@@ -4,7 +4,11 @@ use FastRoute\RouteCollector;
 /** @var RouteCollector $r */
 
 // Public routes (no authentication required)
-$r->addGroup('/signin', function (RouteCollector $r) {    
+$r->addGroup('/list', function (RouteCollector $r) {
+    $r->addRoute('GET', '/staticVars', 'ListController@staticVars');
+}); 
+
+$r->addGroup('/signin', function (RouteCollector $r) {
     $r->addRoute('GET', '/google/callout', 'AuthController@callout');
     $r->addRoute('GET', '/google/callback', 'AuthController@callback');
 });
