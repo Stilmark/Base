@@ -16,7 +16,7 @@ class Router {
     {
         $dispatcher = cachedDispatcher(
             function (RouteCollector $r) {
-                require ROOT . Env::get('ROUTES_CACHE_PATH');
+                require ROOT . Env::get('ROUTES_PATH');
             },
             [
                 'cacheFile'     => ROOT . Env::get('ROUTES_CACHE_PATH'),
