@@ -6,7 +6,7 @@ use Symfony\Component\Dotenv\Dotenv;
 
 final class Env
 {
-    public static function load(string $path = null)
+    public static function load(?string $path = null)
     {
         (new Dotenv())->usePutenv(true)->load($path);
 
