@@ -3,8 +3,19 @@ Base functionality for web apps
 
 ## Installation
 
+Include in your project with composer:
+
+`composer require stilmark/base`
+
+or clone baseApp for full baseApp scaffolding.
+
+`git clone https://github.com/stilmark/baseApp.git`
+
+`cd baseApp`
+
 `composer update`
 
-Run in DEV mode:
 
-`composer dump-autoload --dev`
+### DEV mode:
+
+`composer update`

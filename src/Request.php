@@ -12,7 +12,7 @@ final class Request
     private array $files;
     private $input;
 
-    public function __construct()
+    public function __construct(?array $jsonInput = null)
     {
         $this->get = $_GET;
         $this->post = $_POST;
@@ -20,7 +20,13 @@ final class Request
         $this->cookies = $_COOKIE;
         $this->files = $_FILES;
         $this->headers = $this->getAllHeaders();
-        $this->input = json_decode(file_get_contents('php://input'), true) ?? [];
+        
+        // Allow injecting JSON input for testing, otherwise read from php://input
+        if ($jsonInput !== null) {
+            $this->input = $jsonInput;
+        } else {
+            $this->input = json_decode(file_get_contents('php://input'), true) ?? [];
+        }
     }
 
     /**
@@ -67,7 +73,7 @@ final class Request
     /**
      * Get JSON input
      */
-    public function json(string $key = null, $default = null)
+    public function json(?string $key = null, $default = null)
     {
         if ($key === null) {
             return $this->input;
