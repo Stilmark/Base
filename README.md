@@ -9,13 +9,13 @@ Include in your project with composer:
 
 or clone baseApp for full baseApp scaffolding.
 
-`git clone https://github.com/stilmark/baseApp.git`
-
-`cd baseApp`
-
-`composer update`
-
+```bash
+git clone https://github.com/stilmark/baseApp.git baseapp
+./baseapp/.dist/bin/install.sh
+```
 
 ### DEV mode:
 
-`composer update`
+```bash
+composer update
+```
