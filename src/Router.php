@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Stilmark\Base;
 
-use Stilmark\Base\Env;
-use Stilmark\Base\AuthMiddleware;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use function FastRoute\cachedDispatcher;
@@ -49,9 +47,16 @@ class Router {
                 Render::json(['error' => 'Method Not Allowed'], 405);
 
             case Dispatcher::FOUND:
-                $handler = (string)$routeInfo[1];
+                $handlerData = $routeInfo[1];
+                if (is_array($handlerData)) {
+                    $handler = (string)$handlerData[0];
+                    $routeData = $handlerData[1] ?? [];
+                } else {
+                    $handler = (string)$handlerData;
+                    $routeData = $routeInfo[3] ?? [];
+                }
                 $vars    = (array)$routeInfo[2];          // associative: paramName => value
-                $middlewares = $routeInfo[3]['middlewares'] ?? [];
+                $middlewares = $routeData['middlewares'] ?? [];
 
                 // Run middlewares
                 if (!empty($middlewares) && !Router::runMiddlewares($middlewares)) {

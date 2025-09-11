@@ -9,6 +9,7 @@ class AuthMiddleware
      */
     public function handle(): bool
     {
+
         // Check for Authorization header
         $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
         
@@ -19,8 +20,8 @@ class AuthMiddleware
         }
 
         // If no token is provided, check for a session
-        if (empty($token) && !empty($_SESSION['user_id'])) {
-            return true;
+        if (empty($token) && isset($_SESSION['user'])) {
+            return isset($_SESSION['user']['id']);
         }
 
         // Validate the token (implement your token validation logic here)
