@@ -84,10 +84,18 @@ class Router {
                     Render::json($result, 200, $prettyPrint);
 
                 } catch (Throwable $e) {
-                    Render::json([
+
+                    $error = [
                         'error'   => 'Server Error',
                         'message' => $e->getMessage(),
-                    ], 500);
+                    ];
+
+                    // Output error in development mode
+                    if (defined('DEV') && DEV) {
+                        $error['trace'] = $e->getTraceAsString();
+                    }
+
+                    Render::json($error, 500);
                 }
         }
 
