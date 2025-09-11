@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Stilmark\Base;
 
+use Stilmark\Base\Env;
+use Stilmark\Base\AuthMiddleware;
+
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use function FastRoute\cachedDispatcher;
