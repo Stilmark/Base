@@ -16,7 +16,7 @@ final class Auth
         $this->provider = new Google([
             'clientId' => Env::get('GOOGLE_CLIENT_ID'),
             'clientSecret' => Env::get('GOOGLE_CLIENT_SECRET'),
-            'redirectUri' => 'https://'.($_SERVER['SERVER_NAME'] ?? 'localhost').Env::get('GOOGLE_REDIRECT_URI'),
+            'redirectUri' => 'https://'.Env::get('SERVER_NAME', 'localhost').Env::get('GOOGLE_REDIRECT_URI'),
         ]);
     }
 
