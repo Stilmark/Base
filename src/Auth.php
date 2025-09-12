@@ -10,9 +10,11 @@ use Stilmark\Base\Request;
 final class Auth
 {
     private Google $provider;
+    private $authSessionName;
 
     public function __construct()
     {
+        $this->authSessionName = Env::get('AUTH_SESSION_NAME', 'auth');
         $this->provider = new Google([
             'clientId' => Env::get('GOOGLE_CLIENT_ID'),
             'clientSecret' => Env::get('GOOGLE_CLIENT_SECRET'),
@@ -51,7 +53,14 @@ final class Auth
             ];
         }
 
-        $_SESSION['access_token'] = $token->getToken();
+        // Store comprehensive session data in auth array
+        $_SESSION[$this->authSessionName] = [
+            'access_token' => $token->getToken(),
+            'token_expires' => $token->getExpires(),
+            'refresh_token' => $token->getRefreshToken(),
+            'user' => $user->toArray(),
+            'auth_time' => time()
+        ];
         
         return [
             'status' => 'success',

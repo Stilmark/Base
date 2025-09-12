@@ -4,6 +4,13 @@ namespace Stilmark\Base;
 
 class AuthMiddleware
 {
+
+    private $authSessionName;
+    
+    public function __construct()
+    {
+        $this->authSessionName = Env::get('AUTH_SESSION_NAME', 'auth');
+    }
     /**
      * Check if the request is authenticated
      */
@@ -20,8 +27,16 @@ class AuthMiddleware
         }
 
         // If no token is provided, check for a session
-        if (empty($token) && isset($_SESSION['user'])) {
-            return isset($_SESSION['user']['id']);
+        if (empty($token) && isset($_SESSION[$this->authSessionName]['access_token'])) {
+            // Check if token has expired
+            if (isset($_SESSION[$this->authSessionName]['token_expires']) && time() >= $_SESSION[$this->authSessionName]['token_expires']) {
+                // Token expired, clear session and deny access
+                $this->clearAuthSession();
+                return false;
+            }
+            
+            // Token exists and is not expired
+            return true;
         }
 
         // Validate the token (implement your token validation logic here)
@@ -31,6 +46,14 @@ class AuthMiddleware
 
         // If we get here, authentication failed
         return false;
+    }
+
+    /**
+     * Clear authentication session data
+     */
+    private function clearAuthSession(): void
+    {
+        unset($_SESSION[$this->authSessionName]);
     }
 
     /**
