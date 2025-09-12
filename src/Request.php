@@ -11,6 +11,10 @@ final class Request
     private array $cookies;
     private array $files;
     private $input;
+    
+    // Security constants
+    private const MAX_JSON_SIZE = 1048576; // 1MB
+    private const MAX_JSON_DEPTH = 512;
 
     public function __construct(?array $jsonInput = null)
     {
@@ -25,7 +29,7 @@ final class Request
         if ($jsonInput !== null) {
             $this->input = $jsonInput;
         } else {
-            $this->input = json_decode(file_get_contents('php://input'), true) ?? [];
+            $this->input = $this->parseJsonInput();
         }
     }
 
@@ -68,6 +72,46 @@ final class Request
     public function post(string $key, $default = null)
     {
         return $this->post[$key] ?? $default;
+    }
+
+    /**
+     * Check if GET parameter(s) exist and return their values
+     * @param string|array $keys Single key or array of keys to check
+     * @return array|false Array of key-value pairs if all keys exist, false otherwise
+     */
+    public function hasGet(string|array $keys): array|false
+    {
+        $keys = is_array($keys) ? $keys : [$keys];
+        $result = [];
+        
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $this->get)) {
+                return false;
+            }
+            $result[$key] = $this->get[$key];
+        }
+        
+        return $result;
+    }
+
+    /**
+     * Check if POST parameter(s) exist and return their values
+     * @param string|array $keys Single key or array of keys to check
+     * @return array|false Array of key-value pairs if all keys exist, false otherwise
+     */
+    public function hasPost(string|array $keys): array|false
+    {
+        $keys = is_array($keys) ? $keys : [$keys];
+        $result = [];
+        
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $this->post)) {
+                return false;
+            }
+            $result[$key] = $this->post[$key];
+        }
+        
+        return $result;
     }
 
     /**
@@ -148,6 +192,229 @@ final class Request
         return $this->files[$key] ?? $default;
     }
 
+    /**
+     * Safely parse JSON input with size and depth limits
+     */
+    private function parseJsonInput(): array
+    {
+        $input = file_get_contents('php://input');
+        
+        // Check size limit
+        if (strlen($input) > self::MAX_JSON_SIZE) {
+            throw new \InvalidArgumentException('JSON input exceeds maximum size limit');
+        }
+        
+        if (empty($input)) {
+            return [];
+        }
+        
+        $decoded = json_decode($input, true, self::MAX_JSON_DEPTH, JSON_THROW_ON_ERROR);
+        
+        if (!is_array($decoded)) {
+            return [];
+        }
+        
+        return $decoded;
+    }
+    
+    /**
+     * Sanitize string input to prevent XSS
+     */
+    public function sanitize(string $input): string
+    {
+        return htmlspecialchars($input, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+    
+    /**
+     * Get sanitized input (XSS protection)
+     */
+    public function safe(string $key, $default = null): string
+    {
+        $value = $this->query($key, $default);
+        return is_string($value) ? $this->sanitize($value) : $default;
+    }
+    
+    /**
+     * Get and validate email input
+     * @param string $key The input key to retrieve
+     * @param string|null $default Default value if key doesn't exist or email is invalid
+     * @return string|null Valid email address or default value
+     */
+    public function email(string $key, ?string $default = null): ?string
+    {
+        $value = $this->query($key, $default);
+        
+        if (!is_string($value)) {
+            return $default;
+        }
+        
+        // Sanitize and validate email
+        $email = filter_var(trim($value), FILTER_SANITIZE_EMAIL);
+        
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $email;
+        }
+        
+        return $default;
+    }
+    
+    /**
+     * Validate POST data with rules
+     * @param array $rules Array of field => validation rules
+     * @return array Validation result with 'valid', 'data', and 'errors' keys
+     */
+    public function validatePost(array $rules): array
+    {
+        return $this->validateData($this->post, $rules);
+    }
+    
+    /**
+     * Validate GET data with rules
+     * @param array $rules Array of field => validation rules
+     * @return array Validation result with 'valid', 'data', and 'errors' keys
+     */
+    public function validateGet(array $rules): array
+    {
+        return $this->validateData($this->get, $rules);
+    }
+
+    /**
+     * Validate and sanitize file upload
+     */
+    public function validateFile(string $key, array $allowedTypes = [], int $maxSize = 5242880): array|false
+    {
+        $file = $this->file($key);
+        
+        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+            return false;
+        }
+        
+        // Check file size
+        if ($file['size'] > $maxSize) {
+            return false;
+        }
+        
+        // Check file type if specified
+        if (!empty($allowedTypes)) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
+            
+            if (!in_array($mimeType, $allowedTypes, true)) {
+                return false;
+            }
+        }
+        
+        // Sanitize filename
+        $file['name'] = preg_replace('/[^a-zA-Z0-9._-]/', '', basename($file['name']));
+        
+        return $file;
+    }
+
+    /**
+     * Internal validation logic
+     * @param array $data Data to validate
+     * @param array $rules Validation rules
+     * @return array Validation result with 'valid', 'data', and 'errors' keys
+     */
+    private function validateData(array $data, array $rules): array
+    {
+        $validated = [];
+        $errors = [];
+        
+        foreach ($rules as $field => $fieldRules) {
+            $value = $data[$field] ?? null;
+            $fieldValid = true;
+            
+            // Check each rule for this field
+            foreach ($fieldRules as $rule) {
+                if ($rule === 'required') {
+                    if ($value === null || $value === '') {
+                        $errors[$field] = 'This field is required';
+                        $fieldValid = false;
+                        break;
+                    }
+                } elseif ($rule === 'email') {
+                    if ($value !== null) {
+                        $email = filter_var(trim($value), FILTER_SANITIZE_EMAIL);
+                        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                            $errors[$field] = 'Invalid email format';
+                            $fieldValid = false;
+                            break;
+                        }
+                        $value = $email; // Use sanitized email
+                    }
+                } elseif (str_starts_with($rule, 'min:')) {
+                    $minLength = (int) substr($rule, 4);
+                    if ($value !== null && strlen($value) < $minLength) {
+                        $errors[$field] = "Must be at least {$minLength} characters";
+                        $fieldValid = false;
+                        break;
+                    }
+                } elseif (str_starts_with($rule, 'max:')) {
+                    $maxLength = (int) substr($rule, 4);
+                    if ($value !== null && strlen($value) > $maxLength) {
+                        $errors[$field] = "Must not exceed {$maxLength} characters";
+                        $fieldValid = false;
+                        break;
+                    }
+                } elseif ($rule === 'url') {
+                    if ($value !== null && !filter_var($value, FILTER_VALIDATE_URL)) {
+                        $errors[$field] = 'Must be a valid URL';
+                        $fieldValid = false;
+                        break;
+                    }
+                } elseif (str_starts_with($rule, 'type:')) {
+                    $type = substr($rule, 5);
+                    if ($value !== null && !$this->validateType($value, $type)) {
+                        $errors[$field] = "Must be a valid {$type}";
+                        $fieldValid = false;
+                        break;
+                    }
+                }
+            }
+            
+            if ($fieldValid) {
+                $validated[$field] = $value;
+            }
+        }
+        
+        return [
+            'valid' => empty($errors),
+            'data' => $validated,
+            'errors' => $errors
+        ];
+    }
+    
+    /**
+     * Validate value type
+     */
+    private function validateType($value, string $type): bool
+    {
+        return match($type) {
+            'int', 'integer' => filter_var($value, FILTER_VALIDATE_INT) !== false,
+            'float', 'double' => filter_var($value, FILTER_VALIDATE_FLOAT) !== false,
+            'bool', 'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== null,
+            'url' => filter_var($value, FILTER_VALIDATE_URL) !== false,
+            'string' => is_string($value),
+            default => true
+        };
+    }
+    
+    /**
+     * Validate CSRF token
+     */
+    public function validateCsrfToken(string $sessionTokenKey = 'csrf_token'): bool
+    {
+        $token = $this->query('_token') ?? $this->header('X-CSRF-TOKEN');
+        
+        if (!$token || !isset($_SESSION[$sessionTokenKey])) {
+            return false;
+        }
+        
+        return hash_equals($_SESSION[$sessionTokenKey], $token);
+    }
+    
     /**
      * Get all request headers
      */
