@@ -64,10 +64,12 @@ final class Auth
         
         return [
             'status' => 'success',
-            'access_token' => $token->getToken(),
-            'expires' => $token->getExpires(),
-            'refresh_token' => $token->getRefreshToken(),
             'user' => $user->toArray(),
         ];
+    }
+
+    public function logout()
+    {
+        unset($_SESSION[$this->authSessionName]);
     }
 }
