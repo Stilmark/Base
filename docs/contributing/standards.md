@@ -1,3 +1,0 @@
-# Standards
-
-_TBD_

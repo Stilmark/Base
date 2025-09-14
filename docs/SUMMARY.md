@@ -35,11 +35,6 @@
 - [OAuth Login Flow](examples/oauth.md)
 - [Route Protection with Middleware](examples/middleware.md)
 
-## Contributing
-- [How to Contribute](contributing/how-to.md)
-- [Coding Standards](contributing/standards.md)
-- [Testing](contributing/testing.md)
-
 ## Appendix
 - [Changelog](appendix/changelog.md)
 - [License](appendix/license.md)
