@@ -20,6 +20,11 @@ class Router {
 
     public static function dispatch()
     {
+        // ----------------------------------------
+        // Handle CORS preflight requests
+        // ----------------------------------------
+        self::handleCors();
+
         $dispatcher = cachedDispatcher(
             function (RouteCollector $r) {
                 require ROOT . Env::get('ROUTES_PATH');
@@ -221,4 +226,94 @@ class Router {
         return $out;
     }
 
+    // ----------------------------------------
+    // CORS handling
+    // ----------------------------------------
+    private static function handleCors(): void
+    {
+        // Check if CORS is enabled
+        if (Env::get('CORS_ENABLED', 'false') !== 'true') {
+            return;
+        }
+
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        $allowedOrigins = self::getAllowedOrigins();
+        
+        // Check if origin is allowed
+        if (self::isOriginAllowed($origin, $allowedOrigins)) {
+            header("Access-Control-Allow-Origin: $origin");
+            header("Vary: Origin");
+            
+            // Add credentials support if enabled
+            if (Env::get('CORS_ALLOW_CREDENTIALS', 'false') === 'true') {
+                header("Access-Control-Allow-Credentials: true");
+            }
+        }
+
+        // Handle preflight OPTIONS request
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            $allowedMethods = Env::get('CORS_ALLOWED_METHODS', 'GET, POST, PUT, DELETE, OPTIONS');
+            $allowedHeaders = Env::get('CORS_ALLOWED_HEADERS', 'Content-Type, Authorization, X-Requested-With');
+            $maxAge = Env::get('CORS_MAX_AGE', '86400'); // 24 hours default
+
+            header("Access-Control-Allow-Methods: $allowedMethods");
+            header("Access-Control-Allow-Headers: $allowedHeaders");
+            header("Access-Control-Max-Age: $maxAge");
+            
+            http_response_code(204);
+            exit;
+        }
+    }
+
+    /**
+     * Get allowed origins from environment configuration
+     */
+    private static function getAllowedOrigins(): array
+    {
+        $origins = Env::get('CORS_ALLOWED_ORIGINS', '');
+        
+        if (empty($origins)) {
+            return [];
+        }
+        
+        // Handle wildcard
+        if ($origins === '*') {
+            return ['*'];
+        }
+        
+        // Split comma-separated origins and trim whitespace
+        return array_map('trim', explode(',', $origins));
+    }
+
+    /**
+     * Check if the given origin is allowed
+     */
+    private static function isOriginAllowed(string $origin, array $allowedOrigins): bool
+    {
+        if (empty($origin) || empty($allowedOrigins)) {
+            return false;
+        }
+        
+        // Allow all origins if wildcard is set
+        if (in_array('*', $allowedOrigins)) {
+            return true;
+        }
+        
+        // Check exact match
+        if (in_array($origin, $allowedOrigins)) {
+            return true;
+        }
+        
+        // Check pattern matching for subdomains (e.g., *.example.com)
+        foreach ($allowedOrigins as $allowedOrigin) {
+            if (strpos($allowedOrigin, '*') !== false) {
+                $pattern = str_replace('*', '.*', preg_quote($allowedOrigin, '/'));
+                if (preg_match("/^$pattern$/", $origin)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
 }

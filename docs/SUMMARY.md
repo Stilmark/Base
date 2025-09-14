@@ -35,6 +35,7 @@
 - [Using Env in Code](examples/env-usage.md)
 - [OAuth Login Flow](examples/oauth.md)
 - [Route Protection with Middleware](examples/middleware.md)
+- [CORS Setup](examples/cors-setup.md)
 
 ## Testing
 - [Getting Started with Testing](testing/getting-started.md)

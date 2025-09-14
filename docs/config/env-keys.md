@@ -82,6 +82,49 @@ GOOGLE_REDIRECT_URI=/auth/google/callback
 | `GOOGLE_CLIENT_SECRET` | Google OAuth2 client secret | Yes | `GOCSPX-abcdefghijklmnop` |
 | `GOOGLE_REDIRECT_URI` | OAuth callback URI | Yes | `https://myapp.com/auth/google/callback` |
 
+## CORS Configuration
+
+Cross-Origin Resource Sharing (CORS) configuration for handling requests from different domains:
+
+```bash
+# CORS Configuration
+CORS_ENABLED=false
+CORS_ALLOWED_ORIGINS=https://baseapp.dk,https://baseapp.dev
+CORS_ALLOWED_METHODS=GET, POST, PUT, DELETE, OPTIONS
+CORS_ALLOWED_HEADERS=Content-Type, Authorization, X-Requested-With
+CORS_ALLOW_CREDENTIALS=false
+CORS_MAX_AGE=86400
+```
+
+### CORS Variables
+
+| Variable | Description | Default | Example |
+|----------|-------------|---------|---------|
+| `CORS_ENABLED` | Enable/disable CORS handling | `false` | `true` |
+| `CORS_ALLOWED_ORIGINS` | Comma-separated list of allowed origins | _(empty)_ | `https://app.com,https://admin.app.com` |
+| `CORS_ALLOWED_METHODS` | HTTP methods allowed for CORS requests | `GET, POST, PUT, DELETE, OPTIONS` | `GET, POST, OPTIONS` |
+| `CORS_ALLOWED_HEADERS` | Headers allowed in CORS requests | `Content-Type, Authorization, X-Requested-With` | `Content-Type, X-API-Key` |
+| `CORS_ALLOW_CREDENTIALS` | Allow credentials (cookies, auth headers) | `false` | `true` |
+| `CORS_MAX_AGE` | Preflight cache duration in seconds | `86400` | `3600` |
+
+### CORS Origin Patterns
+
+You can specify origins in several ways:
+
+```bash
+# Exact domains
+CORS_ALLOWED_ORIGINS=https://app.example.com,https://admin.example.com
+
+# Wildcard for all subdomains
+CORS_ALLOWED_ORIGINS=https://*.example.com
+
+# Allow all origins (not recommended for production)
+CORS_ALLOWED_ORIGINS=*
+
+# Mixed patterns
+CORS_ALLOWED_ORIGINS=https://app.com,https://*.dev.example.com,http://localhost:3000
+```
+
 ## Environment-Specific Configuration
 
 ### Development Environment
