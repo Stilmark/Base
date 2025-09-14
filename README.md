@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP Version](https://img.shields.io/badge/PHP-%5E8.2-blue.svg)](https://php.net)
 [![Composer](https://img.shields.io/badge/Composer-PSR--4-orange.svg)](https://getcomposer.org)
+[![CodeFactor](https://www.codefactor.io/repository/github/stilmark/base/badge)](https://www.codefactor.io/repository/github/stilmark/base)
 
 A lightweight PHP utility library providing essential functionality for modern web applications. Base serves as a foundation for building PHP applications with clean, reusable components.
 
