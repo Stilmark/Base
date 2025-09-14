@@ -131,13 +131,13 @@ $_SESSION['user'] = $user;
 
 ## Documentation
 
- **[Complete Documentation](https://stilmark-base.gitbook.io/base/)**
+ **[Complete Documentation](https://stilmark-dev.gitbook.io/base/)**
 
-- [Installation Guide](https://stilmark-base.gitbook.io/base/intro/installation)
-- [Getting Started](https://stilmark-base.gitbook.io/base/getting-started/overview)
-- [Core Classes Reference](https://stilmark-base.gitbook.io/base/core/)
-- [Examples & Tutorials](https://stilmark-base.gitbook.io/base/examples/)
-- [Configuration](https://stilmark-base.gitbook.io/base/config/)
+- [Installation Guide](https://stilmark-dev.gitbook.io/base/intro/installation)
+- [Getting Started](https://stilmark-dev.gitbook.io/base/getting-started/overview)
+- [Core Classes Reference](https://stilmark-dev.gitbook.io/base/core/)
+- [Examples & Tutorials](https://stilmark-dev.gitbook.io/base/examples/)
+- [Configuration](https://stilmark-dev.gitbook.io/base/config/)
 
 ## Related Projects
 

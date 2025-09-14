@@ -195,7 +195,7 @@ $router->dispatch();
 If you're still experiencing issues:
 
 1. Check the [GitHub Issues](https://github.com/Stilmark/Base/issues)
-2. Review the [complete documentation](https://stilmark-base.gitbook.io/base/)
+2. Review the [complete documentation](https://stilmark-dev.gitbook.io/base/)
 3. Create a minimal reproduction case
 4. Submit a new issue with:
    - PHP version
