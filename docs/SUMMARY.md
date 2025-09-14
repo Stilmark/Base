@@ -5,6 +5,7 @@
 - [Requirements & Dependencies](intro/requirements.md)
 - [Installation](intro/installation.md)
 - [Directory Overview](intro/directory-overview.md)
+- [Troubleshooting](intro/troubleshooting.md)
 
 ## Getting Started
 - [Bootstrap & Usage Overview](getting-started/overview.md)
@@ -34,6 +35,9 @@
 - [Using Env in Code](examples/env-usage.md)
 - [OAuth Login Flow](examples/oauth.md)
 - [Route Protection with Middleware](examples/middleware.md)
+
+## Testing
+- [Getting Started with Testing](testing/getting-started.md)
 
 ## Appendix
 - [Changelog](appendix/changelog.md)
