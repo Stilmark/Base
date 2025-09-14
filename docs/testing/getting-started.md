@@ -43,7 +43,7 @@ Env::load(__DIR__ . '/../.env.testing');
 
 // Set test-specific configurations
 Env::set('APP_ENV', 'testing');
-Env::set('DB_DATABASE', 'test_database');
+Env::set('DB_DATABASE', 'baseapp_test');
 ```
 
 ## Unit Testing Examples
@@ -264,7 +264,7 @@ Create a separate `.env.testing` file:
 ```bash
 # .env.testing
 APP_ENV=testing
-DB_DATABASE=test_db
+DB_DATABASE=baseapp_test
 CACHE_DRIVER=array
 SESSION_DRIVER=array
 ```

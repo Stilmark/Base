@@ -131,9 +131,9 @@ class DatabaseConfig
     {
         return [
             'host' => Env::get('DB_HOST', 'localhost'),
-            'database' => Env::get('DB_DATABASE', 'app'),
-            'username' => Env::get('DB_USERNAME', 'root'),
-            'password' => Env::get('DB_PASSWORD', ''),
+            'database' => Env::get('DB_DATABASE', 'baseapp'),
+            'username' => Env::get('DB_USERNAME', 'local'),
+            'password' => Env::get('DB_PASSWORD', 'local'),
             'port' => (int) Env::get('DB_PORT', 3306),
         ];
     }
@@ -193,9 +193,9 @@ APP_URL=http://localhost:8000
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=myapp
-DB_USERNAME=root
-DB_PASSWORD=secret
+DB_DATABASE=baseapp
+DB_USERNAME=local
+DB_PASSWORD=local
 
 # External services
 REDIS_HOST=127.0.0.1
@@ -312,7 +312,7 @@ Env::load(__DIR__ . '/../.env.testing');
 
 // Override for tests
 Env::set('APP_ENV', 'testing');
-Env::set('DB_DATABASE', 'test_database');
+Env::set('DB_DATABASE', 'baseapp_test');
 ```
 
 ### Mocking Environment Variables
