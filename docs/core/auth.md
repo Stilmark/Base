@@ -2,11 +2,15 @@
 
 Google OAuth2 authentication using `league/oauth2-client` and the Google provider.
 
+**Repository:** [thephpleague/oauth2-google](https://github.com/thephpleague/oauth2-google)
+
+**Detailed Example:** See [examples/oauth.md](../examples/oauth.md) for complete implementation.
+
 ## Environment
 ```
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
-GOOGLE_REDIRECT_URI=https://your-app.com/oauth/callback
+GOOGLE_REDIRECT_URI=https://baseapp.com/oauth/callback
 ```
 
 ## Flow

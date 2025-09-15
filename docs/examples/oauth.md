@@ -40,10 +40,20 @@ class AuthController extends Controller
 }
 ```
 
+## Google Credentials Setup
+
+Before using OAuth2, you need to obtain Google credentials:
+
+1. Go to the [Google Cloud Console](https://developers.google.com/identity/openid-connect/openid-connect#registeringyourapp)
+2. Create a new project or select an existing one
+3. Enable the Google+ API
+4. Create OAuth 2.0 credentials (Client ID and Client Secret)
+5. Add your redirect URI to the authorized redirect URIs
+
 ## .env requirements
 ```
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
+GOOGLE_CLIENT_ID=...          # From Google Cloud Console
+GOOGLE_CLIENT_SECRET=...      # From Google Cloud Console
 GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
 ```
 
