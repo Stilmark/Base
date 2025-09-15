@@ -28,6 +28,7 @@
 - [Auth](core/auth.md)
 - [AuthMiddleware](core/auth-middleware.md)
 - [Logger](core/logger.md)
+- [Helper](core/helper.md)
 
 ## Examples
 - [Defining Routes & Controllers](examples/routes-controllers.md)
