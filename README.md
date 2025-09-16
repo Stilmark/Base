@@ -161,7 +161,3 @@ This project is licensed under the MIT License - see the [LICENSE](docs/appendix
 **Christian Lund**  
 - Email: clund@stilmark.com
 - Website: [stilmark.com](http://stilmark.com)
-
----
-
-*Built with by [Stilmark](http://stilmark.com)*
