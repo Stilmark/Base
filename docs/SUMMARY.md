@@ -9,11 +9,11 @@
 
 ## Getting Started
 - [Bootstrap & Usage Overview](getting-started/overview.md)
-- [Environment Variables (`Env`)](getting-started/env.md)
-- [Handling Requests (`Request`)](getting-started/request.md)
-- [Routing & Controllers (`Router` + `Controller`)](getting-started/routing.md)
-- [Rendering Responses (`Render`)](getting-started/render.md)
-- [Authentication (`Auth` + Middleware)](getting-started/auth.md)
+- [Environment Variables](getting-started/env.md)
+- [Handling Requests](getting-started/request.md)
+- [Routing & Controllers](getting-started/routing.md)
+- [Rendering Responses](getting-started/render.md)
+- [Authentication](getting-started/auth.md)
 
 ## Configuration
 - [Environment Keys](config/env-keys.md)

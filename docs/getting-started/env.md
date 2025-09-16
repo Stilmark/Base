@@ -1,4 +1,7 @@
-# Environment Variables (`Env`)
+# Environment Variables
+
+**Core Class:** [Env](../core/env.md)
+**Example:** [Using Env in Code](../examples/env-usage.md)
 
 The `Env` class manages application configuration using environment variables.
 
