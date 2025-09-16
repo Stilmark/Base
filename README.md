@@ -9,21 +9,29 @@ A lightweight PHP utility library providing essential functionality for modern w
 
 ## Features
 
-- **Environment Management** - Flexible `.env` file handling with runtime overrides
-- **Request Handling** - Parse GET, POST, JSON, headers, cookies, and file uploads
-- **Routing System** - Fast routing with middleware support using FastRoute
-- **Base Controller** - Foundation controller with JSON and redirect helpers
-- **Response Rendering** - Built-in JSON and CSV response formatting
-- **Authentication** - Google OAuth2 integration with session management
-- **Middleware** - Extensible middleware system for route protection
-- **Logging** - Structured logging capabilities
-- **Lightweight** - Minimal dependencies, maximum performance
+- **Environment Management**: Load and access `.env` variables.
+- **Request Handling**: A unified interface for HTTP requests, including input retrieval, validation, and sanitization.
+- **Routing**: A simple and fast router with middleware support.
+- **Controllers**: A base controller to extend for application logic.
+- **Response Rendering**: Helpers for sending JSON and CSV responses.
+- **Authentication**: Multi-provider OAuth2 support (e.g., Google) and middleware for protecting routes.
+- **Logging**: PSR-3 compliant logging with built-in Rollbar integration.
+- **Helper Utilities**: Static methods for common tasks like string manipulation.
 
 ## Requirements
 
-- PHP 8.2 or higher
-- Composer
-- Extensions: `json`, `curl` (for OAuth)
+- **PHP**: version 8.2 or higher
+- **Composer** for dependency management
+
+### Dependencies
+
+Base relies on the following libraries (installed via Composer):
+
+- [symfony/dotenv](https://github.com/symfony/dotenv) – for loading environment variables from `.env` files
+- [nikic/fast-route](https://github.com/nikic/FastRoute) – for routing
+- [league/oauth2-client](https://github.com/thephpleague/oauth2-client) – for OAuth2 authentication
+- [league/oauth2-google](https://github.com/thephpleague/oauth2-google) – Google OAuth2 provider
+- [rollbar/rollbar](https://github.com/rollbar/rollbar-php) – for error tracking and monitoring
 
 ## Installation
 
@@ -86,15 +94,16 @@ class HomeController extends Controller
 ## Core Components
 
 | Component | Description |
-|-----------|-------------|
-| **Env** | Environment variable management with `.env` support |
-| **Request** | HTTP request parsing and data extraction |
-| **Router** | Fast routing with middleware and parameter support |
-| **Controller** | Base controller with common response helpers |
-| **Render** | Response formatting for JSON, CSV, and more |
-| **Auth** | Google OAuth2 authentication flow |
-| **AuthMiddleware** | Route protection and session management |
-| **Logger** | Structured logging with multiple output formats |
+|---|---|
+| **Env** | Loads and manages environment variables from `.env`. |
+| **Request** | Provides a unified interface for handling HTTP requests, including input retrieval, validation, and sanitization. |
+| **Router** | Handles routing, controller/method resolution, and middleware execution. |
+| **Controller** | Base class for application controllers. |
+| **Render** | Provides helper methods for rendering JSON and CSV responses. |
+| **Auth** | Handles multi-provider OAuth2 login flows (e.g., Google). |
+| **AuthMiddleware** | Validates bearer tokens in requests. |
+| **Logger** | PSR-3 compliant logger with built-in Rollbar integration. |
+| **Helper** | Provides static utility methods (e.g., string case conversion). |
 
 ## Usage Examples
 
@@ -142,16 +151,6 @@ $_SESSION['user'] = $user;
 ## Related Projects
 
 - **[BaseApp](https://github.com/Stilmark/BaseApp)** - Full application framework built on Base
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## License
 
