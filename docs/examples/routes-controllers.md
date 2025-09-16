@@ -7,13 +7,12 @@ This example shows how to wire routes to controllers using Base's `Router` and `
 public/
   index.php
 app/
-  Http/
-    Controllers/
-      HelloController.php
+  controllers/
+    HelloController.php
 ```
 
-## `public/index.php`
-```php
+***/public/index.php***
+```php title="/public/index.php"
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -44,8 +43,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 
 > Handler strings are resolved as `"Namespace\\Class@method"`.> Route parameters (e.g. `{name}`) are bound to controller method arguments.
 
-## `app/controllers/HelloController.php`
-```php
+***/app/controllers/HelloController.php***
+```php title="/app/controllers/HelloController.php"
 <?php
 namespace BaseApp\Controller;
 
