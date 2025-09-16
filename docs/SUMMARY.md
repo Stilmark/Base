@@ -31,6 +31,7 @@
 - [Helper](core/helper.md)
 
 ## Examples
+- [Request Class Usage](examples/request-usage.md)
 - [Defining Routes & Controllers](examples/routes-controllers.md)
 - [Returning JSON & CSV](examples/responses.md)
 - [Using Env in Code](examples/env-usage.md)
