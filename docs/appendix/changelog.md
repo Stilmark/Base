@@ -3,7 +3,17 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-- Add more documentation examples
+
+## [1.6.9] - 2025-09-16
+### Documentation
+- **Request class**: Expanded documentation with a detailed API reference and usage examples.
+
+## [1.6.8] - 2025-09-15
+### Added
+- **Helper class**: New class with string case conversion utilities.
+
+### Documentation
+- Updated changelog for versions 1.6.4-1.6.7.
 
 ## [1.6.7] - 2025-09-15
 ### Added
