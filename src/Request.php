@@ -75,23 +75,24 @@ final class Request
     }
 
     /**
+     * Get JSON input
+     */
+    public function json(?string $key = null, $default = null)
+    {
+        if ($key === null) {
+            return $this->input;
+        }
+        return $this->input[$key] ?? $default;
+    }
+
+    /**
      * Check if GET parameter(s) exist and return their values
      * @param string|array $keys Single key or array of keys to check
      * @return array|false Array of key-value pairs if all keys exist, false otherwise
      */
     public function hasGet(string|array $keys): array|false
     {
-        $keys = is_array($keys) ? $keys : [$keys];
-        $result = [];
-        
-        foreach ($keys as $key) {
-            if (!array_key_exists($key, $this->get)) {
-                return false;
-            }
-            $result[$key] = $this->get[$key];
-        }
-        
-        return $result;
+        return $this->hasKeys($this->get, $keys);
     }
 
     /**
@@ -101,28 +102,41 @@ final class Request
      */
     public function hasPost(string|array $keys): array|false
     {
-        $keys = is_array($keys) ? $keys : [$keys];
-        $result = [];
-        
-        foreach ($keys as $key) {
-            if (!array_key_exists($key, $this->post)) {
-                return false;
-            }
-            $result[$key] = $this->post[$key];
-        }
-        
-        return $result;
+        return $this->hasKeys($this->post, $keys);
     }
 
     /**
-     * Get JSON input
+     * Check if JSON parameter(s) exist and return their values
+     * @param string|array $keys Single key or array of keys to check
+     * @return array|false Array of key-value pairs if all keys exist, false otherwise
      */
-    public function json(?string $key = null, $default = null)
+    public function hasJson(string|array $keys): array|false
     {
-        if ($key === null) {
-            return $this->input;
+        if (!is_array($this->input)) {
+            return false;
         }
-        return $this->input[$key] ?? $default;
+        return $this->hasKeys($this->input, $keys);
+    }
+
+    /**
+     * Check if key(s) exist in a source array and return their values
+     * @param array $source The source array to check
+     * @param string|array $keys Single key or array of keys to check
+     * @return array|false Array of key-value pairs if all keys exist, false otherwise
+     */
+    private function hasKeys(array $source, string|array $keys): array|false
+    {
+        $keys = is_array($keys) ? $keys : [$keys];
+        $result = [];
+
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $source)) {
+                return false;
+            }
+            $result[$key] = $source[$key];
+        }
+
+        return $result;
     }
 
     /**
@@ -257,17 +271,7 @@ final class Request
         
         return $default;
     }
-    
-    /**
-     * Validate POST data with rules
-     * @param array $rules Array of field => validation rules
-     * @return array Validation result with 'valid', 'data', and 'errors' keys
-     */
-    public function validatePost(array $rules): array
-    {
-        return $this->validateData($this->post, $rules);
-    }
-    
+
     /**
      * Validate GET data with rules
      * @param array $rules Array of field => validation rules
@@ -277,6 +281,27 @@ final class Request
     {
         return $this->validateData($this->get, $rules);
     }
+
+    /**
+     * Validate POST data with rules
+     * @param array $rules Array of field => validation rules
+     * @return array Validation result with 'valid', 'data', and 'errors' keys
+     */
+    public function validatePost(array $rules): array
+    {
+        return $this->validateData($this->post, $rules);
+    }
+
+    /**
+     * Validate JSON data with rules
+     * @param array $rules Array of field => validation rules
+     * @return array Validation result with 'valid', 'data', and 'errors' keys
+     */
+    public function validateJson(array $rules): array
+    {
+        return $this->validateData($this->input, $rules);
+    }
+
 
     /**
      * Validate and sanitize file upload
