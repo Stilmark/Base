@@ -1,7 +1,9 @@
 # Rendering Responses
 
-**Core Class:** [Render](../core/render.md)
-**Example:** [Returning JSON & CSV](../examples/responses.md)
+- **Core Class:** [Render](../core/render.md)
+- **Example:** [Returning JSON & CSV](../examples/responses.md)
+
+---
 
 The `Render` class provides helpers for sending responses.
 

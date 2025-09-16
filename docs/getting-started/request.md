@@ -1,7 +1,9 @@
 # Handling Requests
 
-**Core Class:** [Request](../core/request.md)
-**Example:** [Request Class Usage](../examples/request-usage.md)
+- **Core Class:** [Request](../core/request.md)
+- **Example:** [Request Class Usage](../examples/request-usage.md)
+
+---
 
 The `Request` class wraps HTTP request data.
 

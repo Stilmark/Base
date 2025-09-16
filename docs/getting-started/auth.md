@@ -1,8 +1,9 @@
 # Authentication
 
-**Core Classes:** [Auth](../core/auth.md), [AuthMiddleware](../core/auth-middleware.md)
+- **Core Classes:** [Auth](../core/auth.md), [AuthMiddleware](../core/auth-middleware.md)
+- **Examples:** [OAuth Login Flow](../examples/oauth.md), [Route Protection with Middleware](../examples/middleware.md)
 
-**Examples:** [OAuth Login Flow](../examples/oauth.md), [Route Protection with Middleware](../examples/middleware.md)
+---
 
 Base includes helpers for Google OAuth2 and request authentication.
 

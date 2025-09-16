@@ -1,7 +1,9 @@
 # Routing & Controllers
 
-**Core Class:** [Router](../core/router.md)
-**Example:** [Defining Routes & Controllers](../examples/routes-controllers.md)
+- **Core Class:** [Router](../core/router.md)
+- **Example:** [Defining Routes & Controllers](../examples/routes-controllers.md)
+
+---
 
 Base uses [FastRoute](https://github.com/nikic/FastRoute) for routing.
 
