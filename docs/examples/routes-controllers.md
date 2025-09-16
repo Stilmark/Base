@@ -11,8 +11,8 @@ app/
     HelloController.php
 ```
 
-***/public/index.php***
-```php title="/public/index.php"
+`/public/index.php`:
+```php
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -43,8 +43,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 
 > Handler strings are resolved as `"Namespace\\Class@method"`.> Route parameters (e.g. `{name}`) are bound to controller method arguments.
 
-***/app/controllers/HelloController.php***
-```php title="/app/controllers/HelloController.php"
+`/app/controllers/HelloController.php`:
+```php
 <?php
 namespace BaseApp\Controller;
 
