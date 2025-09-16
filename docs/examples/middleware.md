@@ -8,9 +8,9 @@ $r->addRoute(
     'GET',
     '/admin',
     [
-        'handler' => 'App\\Http\\Controllers\\AdminController@index',
+        'handler' => 'BaseApp\\Controller\\AdminController@index',
         'middlewares' => [
-            'App\\Http\\Middleware\\AuthGate',
+            'BaseApp\\Middleware\\AuthGate',
         ],
     ]
 );
@@ -18,7 +18,7 @@ $r->addRoute(
 
 ## Middleware
 ```php
-namespace App\Http\Middleware;
+namespace BaseApp\Middleware;
 
 use Stilmark\Base\AuthMiddleware;
 

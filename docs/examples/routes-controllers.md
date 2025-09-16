@@ -37,17 +37,17 @@ Adjust the route callback in `Router` to include your routes, e.g.:
 
 ```php
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-    $r->addRoute('GET', '/hello', 'App\\Http\\Controllers\\HelloController@index');
-    $r->addRoute('GET', '/hello/{name}', 'App\\Http\\Controllers\\HelloController@greet');
+    $r->addRoute('GET', '/hello', 'BaseApp\\Controller\\HelloController@index');
+    $r->addRoute('GET', '/hello/{name}', 'BaseApp\\Controller\\HelloController@greet');
 });
 ```
 
 > Handler strings are resolved as `"Namespace\\Class@method"`.> Route parameters (e.g. `{name}`) are bound to controller method arguments.
 
-## `app/Http/Controllers/HelloController.php`
+## `app/controllers/HelloController.php`
 ```php
 <?php
-namespace App\Http\Controllers;
+namespace BaseApp\Controller;
 
 use Stilmark\Base\Controller;
 

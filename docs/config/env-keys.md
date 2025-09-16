@@ -187,7 +187,7 @@ use Stilmark\Base\Env;
 // Base configuration
 $mode = Env::get('MODE', 'LOCAL');
 $serverName = Env::get('SERVER_NAME', 'localhost');
-$controllerNs = Env::get('CONTROLLER_NS', 'App\\Controllers\\');
+$controllerNs = Env::get('CONTROLLER_NS', 'BaseApp\\Controller\\');
 
 // Database configuration
 $dbConfig = [

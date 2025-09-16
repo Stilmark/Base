@@ -51,7 +51,7 @@ Env::load(__DIR__ . '/.env');
 
 // Initialize and dispatch routes
 $router = new Router();
-$router->addRoute('GET', '/', 'App\\Controllers\\HomeController@index');
+$router->addRoute('GET', '/', 'BaseApp\\Controller\\HomeController@index');
 $router->dispatch();
 ```
 
@@ -67,7 +67,7 @@ cp vendor/stilmark/base/.env.example .env
 
 ```php
 <?php
-namespace App\Controllers;
+namespace BaseApp\Controller;
 
 use Stilmark\Base\Controller;
 

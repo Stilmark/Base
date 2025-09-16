@@ -4,7 +4,7 @@ The `Router` integrates [FastRoute](https://github.com/nikic/FastRoute) and reso
 
 ## Overview
 - Dispatches incoming requests
-- Resolves handlers like `"App\\Http\\UsersController@index"`
+- Resolves handlers like `"BaseApp\\Controller\\UsersController@index"`
 - Binds route params to controller method arguments
 - Executes middleware chain before action
 

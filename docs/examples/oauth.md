@@ -4,13 +4,13 @@ Use `Auth` to implement Google OAuth2 login.
 
 ## Routes
 ```php
-$r->addRoute('GET', '/auth/google', 'App\\Http\\Controllers\\AuthController@callout');
-$r->addRoute('GET', '/auth/google/callback', 'App\\Http\\Controllers\\AuthController@callback');
+$r->addRoute('GET', '/auth/google', 'BaseApp\\Controller\\AuthController@callout');
+$r->addRoute('GET', '/auth/google/callback', 'BaseApp\\Controller\\AuthController@callback');
 ```
 
 ## Controller
 ```php
-namespace App\Http\Controllers;
+namespace BaseApp\Controller;
 
 use Stilmark\Base\Controller;
 use Stilmark\Base\Auth;
