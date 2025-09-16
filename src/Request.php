@@ -348,6 +348,9 @@ final class Request
         $errors = [];
         
         foreach ($rules as $field => $fieldRules) {
+            if (is_string($fieldRules)) {
+                $fieldRules = explode('|', $fieldRules);
+            }
             $value = $data[$field] ?? null;
             $fieldValid = true;
             
