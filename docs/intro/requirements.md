@@ -2,7 +2,7 @@
 
 Base requires the following to run:
 
-- **PHP**: version 8.1 or higher
+- **PHP**: version 8.2 or higher
 - **Composer** for dependency management
 
 ### Dependencies
@@ -13,5 +13,4 @@ Base relies on the following libraries (installed via Composer):
 - [nikic/fast-route](https://github.com/nikic/FastRoute) – for routing
 - [league/oauth2-client](https://github.com/thephpleague/oauth2-client) – for OAuth2 authentication
 - [league/oauth2-google](https://github.com/thephpleague/oauth2-google) – Google OAuth2 provider
-
-_TBD: Add optional dependencies if introduced._
+- [rollbar/rollbar](https://github.com/rollbar/rollbar-php) – for error tracking and monitoring
