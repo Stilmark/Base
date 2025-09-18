@@ -2,10 +2,11 @@
 
 namespace Stilmark\Base;
 
+use Exception;
+
 class AuthMiddleware
 {
-
-    private $authSessionName;
+    private string $authSessionName;
     
     public function __construct()
     {
@@ -58,6 +59,9 @@ class AuthMiddleware
 
     /**
      * Validate the JWT token
+     * 
+     * @param string|null $token JWT token to validate
+     * @return bool True if token is valid, false otherwise
      */
     private function validateToken(?string $token): bool
     {
@@ -65,10 +69,18 @@ class AuthMiddleware
             return false;
         }
 
-        // TODO: Implement your JWT validation logic here
-        // This is a placeholder - replace with your actual token validation
-        // For example, using firebase/php-jwt or similar library
-        
-        return false; // Default to false for security
+        try {
+            // Validate the token and get the decoded data
+            $decoded = Jwt::validate($token);
+            
+            // Store the decoded token in the session for later use
+            $_SESSION[$this->authSessionName]['jwt'] = $decoded;
+            
+            return true;
+        } catch (Exception $e) {
+            // Log the error if needed
+            error_log('JWT validation failed: ' . $e->getMessage());
+            return false;
+        }
     }
 }

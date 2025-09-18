@@ -15,6 +15,7 @@ A lightweight PHP utility library providing essential functionality for modern w
 - **Controllers**: A base controller to extend for application logic.
 - **Response Rendering**: Helpers for sending JSON and CSV responses.
 - **Authentication**: Multi-provider OAuth2 support (e.g., Google) and middleware for protecting routes.
+- **JWT Support**: JSON Web Token generation and validation with configurable claims and expiration.
 - **Logging**: PSR-3 compliant logging with built-in Rollbar integration.
 - **Helper Utilities**: Static methods for common tasks like string manipulation.
 
@@ -31,6 +32,7 @@ Base relies on the following libraries (installed via Composer):
 - [nikic/fast-route](https://github.com/nikic/FastRoute) – for routing
 - [league/oauth2-client](https://github.com/thephpleague/oauth2-client) – for OAuth2 authentication
 - [league/oauth2-google](https://github.com/thephpleague/oauth2-google) – Google OAuth2 provider
+- [firebase/php-jwt](https://github.com/firebase/php-jwt) – for JWT token generation and validation
 - [rollbar/rollbar](https://github.com/rollbar/rollbar-php) – for error tracking and monitoring
 
 ## Installation
@@ -136,6 +138,26 @@ $auth->callout(); // Redirect to Google OAuth
 // In callback route:
 $user = $auth->callback($request);
 $_SESSION['user'] = $user;
+```
+
+### JWT Usage Example
+
+```php
+use Stilmark\Base\Jwt;
+
+// Generate a JWT token
+$token = Jwt::generate([
+    'user_id' => 123,
+    'email' => 'user@example.com'
+]);
+
+// Validate and decode the token
+try {
+    $decoded = Jwt::validate($token);
+    echo "User ID: " . $decoded->user_id;
+} catch (Exception $e) {
+    echo "Invalid token: " . $e->getMessage();
+}
 ```
 
 ## Documentation

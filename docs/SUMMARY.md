@@ -27,6 +27,7 @@
 - [Render](core/render.md)
 - [Auth](core/auth.md)
 - [AuthMiddleware](core/auth-middleware.md)
+- [JWT](core/jwt.md)
 - [Logger](core/logger.md)
 - [Helper](core/helper.md)
 
@@ -36,6 +37,7 @@
 - [Returning JSON & CSV](examples/responses.md)
 - [Using Env in Code](examples/env-usage.md)
 - [OAuth Login Flow](examples/oauth.md)
+- [JWT Authentication](examples/jwt.md)
 - [Route Protection with Middleware](examples/middleware.md)
 - [CORS Setup](examples/cors-setup.md)
 

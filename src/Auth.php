@@ -4,8 +4,6 @@ namespace Stilmark\Base;
 
 use League\OAuth2\Client\Provider\Google;
 use League\OAuth2\Client\Provider\AbstractProvider;
-
-use Stilmark\Base\Env;
 use Stilmark\Base\Request;
 
 final class Auth
@@ -100,5 +98,6 @@ final class Auth
     public function logout()
     {
         unset($_SESSION[$this->authSessionName]);
+        session_destroy();
     }
 }
