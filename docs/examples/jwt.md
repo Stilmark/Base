@@ -59,6 +59,86 @@ try {
     http_response_code(401);
     exit('Invalid token');
 }
+
+### 3. Using Cookies for JWT Storage
+
+For web applications, it's recommended to store JWTs in secure, HTTP-only cookies:
+
+```php
+use Stilmark\Base\Jwt;
+use Stilmark\Base\Helper;
+
+// After successful authentication
+$token = Jwt::generate([
+    'user_id' => 123,
+    'email' => 'user@example.com'
+]);
+
+// Set secure, HTTP-only cookie (defaults to 1 day)
+Helper::setJwtCookie($token, [
+    'expires' => 86400,  // 1 day
+    'sameSite' => 'Strict'  // Or 'Lax' if you need cross-site requests
+]);
+
+// In subsequent requests, get the JWT from the cookie
+$jwt = Helper::getCookie('jwt');
+if ($jwt) {
+    try {
+        $decoded = Jwt::validate($jwt);
+        // User is authenticated
+    } catch (Exception $e) {
+        // Handle invalid token
+        Helper::deleteCookie('jwt');
+    }
+}
+
+// To log out (invalidate the token)
+Helper::deleteCookie('jwt');
+```
+
+### 4. Complete Login Example with Cookies
+
+```php
+// Login endpoint
+$router->post('/login', function($request) {
+    // Validate credentials (pseudo-code)
+    $user = User::validateCredentials(
+        $request->input('email'),
+        $request->input('password')
+    );
+
+    if (!$user) {
+        http_response_code(401);
+        return ['error' => 'Invalid credentials'];
+    }
+
+    // Generate JWT
+    $token = Jwt::generate([
+        'user_id' => $user->id,
+        'email' => $user->email,
+        'roles' => $user->roles
+    ]);
+
+    // Set secure cookie
+    Helper::setJwtCookie($token, [
+        'expires' => 86400,  // 1 day
+        'sameSite' => 'Strict'
+    ]);
+
+    return [
+        'status' => 'success',
+        'user' => [
+            'id' => $user->id,
+            'email' => $user->email
+        ]
+    ];
+});
+
+// Logout endpoint
+$router->post('/logout', function() {
+    Helper::deleteCookie('jwt');
+    return ['status' => 'success'];
+});
 ```
 
 ## Using with AuthMiddleware
@@ -187,8 +267,11 @@ try {
 ## Best Practices
 
 1. **Secure Token Storage**
-   - Store tokens in HTTP-only cookies for web applications
+   - For web applications, always use HTTP-only, secure cookies with SameSite attribute
+   - Set appropriate cookie expiration times (shorter is more secure)
    - For mobile/SPA, use secure storage (e.g., Keychain, SecureStore)
+   - Never store sensitive data in JWT payload
+   - Implement proper token refresh flow
 
 2. **Token Expiration**
    - Keep access tokens short-lived (e.g., 15-60 minutes)

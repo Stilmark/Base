@@ -1,6 +1,6 @@
 # Helper
 
-Utility functions for common string and array transformations.
+Utility functions for common web development tasks including string/array transformations and secure cookie handling.
 
 ## Overview
 
@@ -98,7 +98,112 @@ $result = Helper::arrayKeysCamelToSnake($data);
 // ]
 ```
 
+## Cookie Handling
+
+Secure methods for managing HTTP cookies with security best practices.
+
+### `setCookie(string $name, string $value, array $options = []): bool`
+
+Set a secure HTTP cookie with configurable options.
+
+**Parameters:**
+- `$name` (string) - Cookie name
+- `$value` (string) - Cookie value
+- `$options` (array) - Optional settings:
+  - `expires` (int) - Expiration time in seconds (default: 0 for session cookie)
+  - `path` (string) - Cookie path (default: '/')
+  - `domain` (string) - Cookie domain (default: current domain)
+  - `secure` (bool) - Only send over HTTPS (default: true in production)
+  - `httpOnly` (bool) - Make cookie inaccessible to JavaScript (default: true)
+  - `sameSite` (string) - CSRF protection: 'Lax', 'Strict', or 'None' (default: 'Lax')
+
+**Example:**
+```php
+use Stilmark\Base\Helper;
+
+// Basic secure cookie
+Helper::setCookie('preferences', 'dark_theme', [
+    'expires' => 86400 * 30,  // 30 days
+    'sameSite' => 'Lax'
+]);
+```
+
+### `setJwtCookie(string $jwt, array $options = []): bool`
+
+Convenience method for setting JWT cookies with secure defaults.
+
+**Parameters:**
+- `$jwt` (string) - The JWT token
+- `$options` (array) - Same as `setCookie()` plus:
+  - `name` (string) - Cookie name (default: 'jwt')
+
+**Example:**
+```php
+use Stilmark\Base\Helper;
+
+// Set JWT cookie with 1 day expiration
+Helper::setJwtCookie($token, [
+    'expires' => 86400,
+    'sameSite' => 'Strict'
+]);
+```
+
+### `getCookie(string $name, $default = null)`
+
+Get a cookie value by name.
+
+**Parameters:**
+- `$name` (string) - Cookie name
+- `$default` (mixed) - Default value if cookie doesn't exist
+
+**Returns:** Cookie value or default
+
+**Example:**
+```php
+$theme = Helper::getCookie('theme', 'light');
+```
+
+### `deleteCookie(string $name, array $options = []): bool`
+
+Delete a cookie by setting its expiration to the past.
+
+**Parameters:**
+- `$name` (string) - Cookie name
+- `$options` (array) - Must match options used when setting the cookie
+
+**Example:**
+```php
+Helper::deleteCookie('jwt', [
+    'path' => '/',
+    'domain' => 'example.com',
+    'secure' => true,
+    'httpOnly' => true
+]);
+```
+
 ## Usage Patterns
+
+### Cookie-based Authentication
+
+```php
+// After successful login
+$token = Jwt::generate(['user_id' => 123]);
+Helper::setJwtCookie($token, [
+    'expires' => 86400,  // 1 day
+    'sameSite' => 'Strict'
+]);
+
+// In subsequent requests
+if ($jwt = Helper::getCookie('jwt')) {
+    try {
+        $user = Jwt::validate($jwt);
+        // User is authenticated
+    } catch (Exception $e) {
+        // Handle invalid token
+        Helper::deleteCookie('jwt');
+    }
+}
+```
 
 ### API Response Transformation
 
@@ -383,9 +488,25 @@ class HelperTest extends TestCase
 }
 ```
 
+## Security Considerations
+
+### Cookie Security
+
+1. **Always use secure cookies in production**:
+   - Set `secure` flag to true (default)
+   - Always use `httpOnly` flag (default)
+   - Set appropriate `sameSite` attribute (default: 'Lax')
+   - Keep expiration times reasonable
+
+2. **JWT in Cookies**:
+   - Always use `httpOnly` cookies for JWT storage
+   - Set appropriate `sameSite` policy based on your needs
+   - Consider using refresh tokens for better security
+   - Implement proper token expiration and renewal
+
 ## Best Practices
 
-1. **Consistent Naming**: Use Helper methods to maintain consistent naming conventions across your application
+1. **Consistency**: Choose one naming convention and stick with it throughout your application
 2. **API Boundaries**: Convert data at API boundaries rather than throughout your application
 3. **Performance**: Cache frequently converted strings for better performance
 4. **Validation**: Validate data after conversion to ensure integrity
