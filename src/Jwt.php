@@ -2,8 +2,8 @@
 
 namespace Stilmark\Base;
 
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+use Firebase\JWT\JWT as FirebaseJwt;
+use Firebase\JWT\Key as FirebaseKey;
 use Exception;
 
 class Jwt
@@ -42,7 +42,7 @@ class Jwt
         // Merge default claims with provided payload
         $tokenData = array_merge($defaultClaims, $payload);
         
-        return JWT::encode($tokenData, $secret, $algorithm);
+        return FirebaseJwt::encode($tokenData, $secret, $algorithm);
     }
     
     /**
@@ -62,7 +62,7 @@ class Jwt
         }
         
         try {
-            return JWT::decode($token, new Key($secret, $algorithm));
+            return FirebaseJwt::decode($token, new FirebaseKey($secret, $algorithm));
         } catch (Exception $e) {
             throw new Exception('Invalid or expired token: ' . $e->getMessage());
         }
