@@ -160,7 +160,7 @@ After successful validation, the decoded token is stored in the session:
 
 ```php
 $router->get('/profile', function($request) {
-    $decodedToken = $_SESSION[env('AUTH_SESSION_NAME', 'auth')]['jwt'] ?? null;
+    $decodedToken = $_SESSION[env('SESSION_AUTH_NAME', 'auth')]['jwt'] ?? null;
     
     if (!$decodedToken) {
         http_response_code(401);

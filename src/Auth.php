@@ -14,7 +14,7 @@ final class Auth
 
     public function __construct(string $providerType = 'google')
     {
-        $this->authSessionName = Env::get('AUTH_SESSION_NAME', 'auth');
+        $this->authSessionName = Env::get('SESSION_AUTH_NAME', 'auth');
         $this->providerType = strtolower($providerType);
         $this->provider = $this->createProvider($this->providerType);
     }

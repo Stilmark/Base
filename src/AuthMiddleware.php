@@ -10,7 +10,7 @@ class AuthMiddleware
     
     public function __construct()
     {
-        $this->authSessionName = Env::get('AUTH_SESSION_NAME', 'auth');
+        $this->authSessionName = Env::get('SESSION_AUTH_NAME', 'auth');
     }
     /**
      * Check if the request is authenticated

@@ -8,7 +8,7 @@ Core configuration variables that control Base framework behavior:
 
 ```bash
 # Base config
-MODE=LOCAL
+APP_ENV=local
 SERVER_NAME=base.dev
 AUTH_SESSION_NAME=auth
 CONTROLLER_NS=BaseApp\Controller\\
@@ -20,12 +20,24 @@ ROUTES_CACHE_PATH=/cache/routes.cache.php
 
 | Variable | Description | Default | Example |
 |----------|-------------|---------|---------|
-| `MODE` | Application mode (LOCAL, DEVELOPMENT, PRODUCTION) | `LOCAL` | `PRODUCTION` |
+| `APP_ENV` | Application environment (local, development, production) | `local` | `production` |
+| `APP_DEBUG` | Enable debug mode (shows errors, stack traces, etc.) | `true` in local/development, `false` otherwise | `true` |
 | `SERVER_NAME` | Server hostname for the application | `base.dev` | `myapp.com` |
-| `AUTH_SESSION_NAME` | Session name for authentication | `auth` | `myapp_auth` |
-| `CONTROLLER_NS` | Namespace for controllers | `BaseApp\Controller\\` | `App\Controllers\\` |
+| `SESSION_AUTH_NAME` | Session name for authentication | `auth` | `myapp_auth` |
+| `CONTROLLER_NS` | Namespace for controllers | `BaseApp\Controller\` | `App\Controllers\` |
 | `ROUTES_PATH` | Path to routes configuration file | `/app/routes.php` | `/config/routes.php` |
 | `ROUTES_CACHE_PATH` | Path for cached routes | `/cache/routes.cache.php` | `/tmp/routes.cache` |
+
+### Session Configuration
+
+| Variable | Description | Default | Example |
+|----------|-------------|---------|---------|
+| `SESSION_DRIVER` | Session storage driver | `file` | `file`, `redis` |
+| `SESSION_LIFETIME` | Session lifetime in minutes | `120` | `1440` (24 hours) |
+| `SESSION_SECURE_COOKIE` | Only send cookie over HTTPS | `false` | `true` in production |
+| `SESSION_HTTP_ONLY` | Make cookie accessible only through HTTP | `true` | `true` |
+| `SESSION_SAME_SITE` | CSRF protection level | `Lax` | `Strict`, `Lax`, `None` |
+| `SESSION_SAVE_PATH` | Path for file-based sessions | System temp dir | `/path/to/sessions` |
 
 ## Geolocation & Localization
 
@@ -130,7 +142,7 @@ CORS_ALLOWED_ORIGINS=https://app.com,https://*.dev.example.com,http://localhost:
 ### Development Environment
 
 ```bash
-MODE=DEVELOPMENT
+APP_ENV=development
 SERVER_NAME=localhost:8000
 DB_DATABASE=baseapp_dev
 GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
@@ -139,7 +151,7 @@ GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
 ### Production Environment
 
 ```bash
-MODE=PRODUCTION
+APP_ENV=production
 SERVER_NAME=myapp.com
 DB_DATABASE=baseapp_production
 GOOGLE_REDIRECT_URI=https://myapp.com/auth/google/callback
@@ -148,7 +160,7 @@ GOOGLE_REDIRECT_URI=https://myapp.com/auth/google/callback
 ### Testing Environment
 
 ```bash
-MODE=TESTING
+APP_ENV=testing
 SERVER_NAME=test.local
 DB_DATABASE=baseapp_test
 AUTH_SESSION_NAME=test_auth
@@ -185,7 +197,7 @@ MAIL_PASSWORD=mail_password
 use Stilmark\Base\Env;
 
 // Base configuration
-$mode = Env::get('MODE', 'LOCAL');
+$mode = Env::get('APP_ENV', 'local');
 $serverName = Env::get('SERVER_NAME', 'localhost');
 $controllerNs = Env::get('CONTROLLER_NS', 'BaseApp\\Controller\\');
 
@@ -210,7 +222,7 @@ Validate required environment variables on application startup:
 class EnvValidator
 {
     private static array $required = [
-        'MODE',
+        'APP_ENV',
         'SERVER_NAME',
         'DB_HOST',
         'DB_DATABASE',

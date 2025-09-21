@@ -65,7 +65,7 @@ if (!$auth->handle()) {
 
 // If we get here, the request is authenticated
 // Access the decoded token from the session if needed
-$decodedToken = $_SESSION[env('AUTH_SESSION_NAME', 'auth')]['jwt'];
+$decodedToken = $_SESSION[env('SESSION_AUTH_NAME', 'auth')]['jwt'];
 ```
 
 ## Security Considerations

@@ -12,7 +12,7 @@ The class relies on environment variables for configuration. You must set these 
 
 ```
 # The session key where authentication data is stored
-AUTH_SESSION_NAME=auth
+SESSION_AUTH_NAME=auth
 
 # Google Provider
 GOOGLE_CLIENT_ID=...

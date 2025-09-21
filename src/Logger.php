@@ -22,7 +22,7 @@ final class Logger
             
             Rollbar::init([
                 'access_token' => Env::get('LOG_API_TOKEN'),
-                'environment' => Env::get('MODE', 'NONE'),
+                'environment' => Env::get('APP_ENV', 'NONE'),
                 'exception_sample_rates' => [],
                 'error_sample_rates' => [],
                 'include_error_code_context' => true,

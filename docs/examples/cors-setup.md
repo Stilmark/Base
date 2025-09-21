@@ -241,7 +241,7 @@ Add debug logging to see CORS processing:
 
 ```php
 // In development environment
-if (Env::get('MODE') === 'DEVELOPMENT') {
+if (Env::get('APP_ENV') === 'development') {
     error_log('CORS Origin: ' . ($_SERVER['HTTP_ORIGIN'] ?? 'none'));
     error_log('CORS Enabled: ' . Env::get('CORS_ENABLED', 'false'));
     error_log('Allowed Origins: ' . Env::get('CORS_ALLOWED_ORIGINS', ''));
