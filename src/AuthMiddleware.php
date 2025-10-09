@@ -4,57 +4,90 @@ namespace Stilmark\Base;
 
 use Exception;
 
+/**
+ * Generic authentication middleware
+ * Validates session existence and timeouts
+ * Projects should extend this class to add custom validation (e.g., user status checks)
+ */
 class AuthMiddleware
 {
-    private string $authSessionName;
+    protected string $authSessionKey;
+    protected int $idleTimeout;
+    protected int $absoluteTimeout;
     
-    public function __construct()
-    {
-        $this->authSessionName = Env::get('SESSION_AUTH_NAME', 'auth');
+    public function __construct(
+        string $authSessionKey = 'auth',
+        int $idleTimeout = 43200,      // 12 hours
+        int $absoluteTimeout = 86400    // 24 hours
+    ) {
+        $this->authSessionKey = $authSessionKey;
+        $this->idleTimeout = $idleTimeout;
+        $this->absoluteTimeout = $absoluteTimeout;
     }
+    
     /**
      * Check if the request is authenticated
+     * Override this method in your project to add custom validation
      */
     public function handle(): bool
     {
-
-        // Check for Authorization header
+        // Check for Authorization header (JWT support)
         $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-        
-        // Extract the token from the header (format: Bearer <token>)
         $token = null;
         if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
             $token = $matches[1];
         }
 
-        // If no token is provided, check for a session
-        if (empty($token) && isset($_SESSION[$this->authSessionName]['access_token'])) {
-            // Check if token has expired
-            if (isset($_SESSION[$this->authSessionName]['token_expires']) && time() >= $_SESSION[$this->authSessionName]['token_expires']) {
-                // Token expired, clear session and deny access
-                $this->clearAuthSession();
-                return false;
-            }
-            
-            // Token exists and is not expired
-            return true;
+        // If JWT token is provided, validate it
+        if (!empty($token)) {
+            return $this->validateToken($token);
         }
 
-        // Validate the token (implement your token validation logic here)
-        if ($this->validateToken($token)) {
-            return true;
+        // Otherwise, check session-based authentication
+        if (!isset($_SESSION[$this->authSessionKey])) {
+            return false;
         }
-
-        // If we get here, authentication failed
-        return false;
+        
+        // Check idle timeout
+        if (Session::isIdleExpired('last_activity', $this->idleTimeout)) {
+            $this->clearAuthSession();
+            return false;
+        }
+        
+        // Check absolute timeout
+        if (Session::isAbsoluteExpired('login_time', $this->absoluteTimeout)) {
+            $this->clearAuthSession();
+            return false;
+        }
+        
+        // Update last activity (rolling timeout)
+        Session::updateActivity('last_activity');
+        
+        // Allow projects to add custom validation
+        return $this->validateSession($_SESSION[$this->authSessionKey]);
+    }
+    
+    /**
+     * Validate session data
+     * Override this method in your project to add custom validation
+     * (e.g., check user status, verify user exists in database)
+     * 
+     * @param array $sessionData Session data to validate
+     * @return bool True if valid, false otherwise
+     */
+    protected function validateSession(array $sessionData): bool
+    {
+        // Base implementation: just check if session has required data
+        // Projects should override this to add custom validation
+        return !empty($sessionData);
     }
 
     /**
      * Clear authentication session data
      */
-    private function clearAuthSession(): void
+    protected function clearAuthSession(): void
     {
-        unset($_SESSION[$this->authSessionName]);
+        unset($_SESSION[$this->authSessionKey]);
     }
 
     /**
@@ -63,7 +96,7 @@ class AuthMiddleware
      * @param string|null $token JWT token to validate
      * @return bool True if token is valid, false otherwise
      */
-    private function validateToken(?string $token): bool
+    protected function validateToken(?string $token): bool
     {
         if (empty($token)) {
             return false;
@@ -74,7 +107,7 @@ class AuthMiddleware
             $decoded = Jwt::validate($token);
             
             // Store the decoded token in the session for later use
-            $_SESSION[$this->authSessionName]['jwt'] = $decoded;
+            $_SESSION[$this->authSessionKey]['jwt'] = $decoded;
             
             return true;
         } catch (Exception $e) {

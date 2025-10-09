@@ -14,7 +14,9 @@ A lightweight PHP utility library providing essential functionality for modern w
 - **Routing**: A simple and fast router with middleware support.
 - **Controllers**: A base controller to extend for application logic.
 - **Response Rendering**: Helpers for sending JSON and CSV responses.
-- **Authentication**: Multi-provider OAuth2 support (e.g., Google) and middleware for protecting routes.
+- **Session Management**: Secure session handling with timeout management and flash data support.
+- **CSRF Protection**: Time-bucketed CSRF tokens with automatic rotation and origin validation.
+- **Authentication**: Multi-provider OAuth2 support (e.g., Google) with session regeneration and timeout management.
 - **JWT Support**: JSON Web Token generation and validation with configurable claims and expiration.
 - **Logging**: PSR-3 compliant logging with built-in Rollbar integration.
 - **Helper Utilities**: Static methods for common tasks like string manipulation.
@@ -98,12 +100,15 @@ class HomeController extends Controller
 | Component | Description |
 |---|---|
 | **Env** | Loads and manages environment variables from `.env`. |
-| **Request** | Provides a unified interface for handling HTTP requests, including input retrieval, validation, and sanitization. |
+| **Request** | Provides a unified interface for handling HTTP requests, including input retrieval, validation, sanitization, and CSRF token generation/validation. |
 | **Router** | Handles routing, controller/method resolution, and middleware execution. |
 | **Controller** | Base class for application controllers. |
 | **Render** | Provides helper methods for rendering JSON and CSV responses. |
-| **Auth** | Handles multi-provider OAuth2 login flows (e.g., Google). |
-| **AuthMiddleware** | Validates bearer tokens in requests. |
+| **Session** | Secure session management with timeout tracking, flash data, and security configuration. |
+| **Auth** | Handles multi-provider OAuth2 login flows (e.g., Google) with automatic session regeneration. |
+| **AuthMiddleware** | Validates session-based or JWT authentication with idle and absolute timeout management. |
+| **CsrfMiddleware** | Automatic CSRF protection for unsafe HTTP methods with time-bucketed token validation. |
+| **JWT** | JSON Web Token generation and validation. |
 | **Logger** | PSR-3 compliant logger with built-in Rollbar integration. |
 | **Helper** | Provides static utility methods (e.g., string case conversion). |
 
@@ -138,6 +143,46 @@ $auth->callout(); // Redirect to Google OAuth
 // In callback route:
 $user = $auth->callback($request);
 $_SESSION['user'] = $user;
+```
+
+### Session Management
+```php
+use Stilmark\Base\Session;
+
+// Configure session security (before session_start)
+Session::configure([
+    'cookie_secure' => true,
+    'cookie_samesite' => 'Strict',
+]);
+
+session_start();
+
+// Set and get session data
+Session::set('user_id', 123);
+$userId = Session::get('user_id');
+
+// Flash messages
+Session::flash('success', 'Login successful!');
+$message = Session::getFlash('success'); // Retrieved once
+```
+
+### CSRF Protection
+```php
+use Stilmark\Base\Request;
+use Stilmark\Base\CsrfMiddleware;
+
+session_start();
+
+// Generate token for forms
+$request = new Request();
+$csrfToken = $request->generateCsrfToken();
+
+// Validate with middleware
+$csrfMiddleware = new CsrfMiddleware(['https://example.com']);
+if (!$csrfMiddleware->handle()) {
+    http_response_code(403);
+    exit('CSRF validation failed');
+}
 ```
 
 ### JWT Usage Example

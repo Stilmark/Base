@@ -430,17 +430,112 @@ final class Request
     }
     
     /**
-     * Validate CSRF token
+     * Generate CSRF token from session secret
+     * Uses time-bucketed HMAC for automatic rotation
+     * 
+     * @param string $sessionKey Session key where secret is stored (default: 'csrf_secret')
+     * @param int $bucketSeconds Time bucket in seconds (default: 3600 = 1 hour)
+     * @return string CSRF token
      */
-    public function validateCsrfToken(string $sessionTokenKey = 'csrf_token'): bool
+    public function generateCsrfToken(string $sessionKey = 'csrf_secret', int $bucketSeconds = 3600): string
     {
-        $token = $this->query('_token') ?? $this->header('X-CSRF-TOKEN');
+        $secret = $this->getOrCreateCsrfSecret($sessionKey);
+        $timestamp = floor(time() / $bucketSeconds);
+        return hash_hmac('sha256', (string) $timestamp, $secret);
+    }
+
+    /**
+     * Get or create CSRF secret in session
+     * 
+     * @param string $sessionKey Session key where secret is stored
+     * @return string Secret
+     */
+    private function getOrCreateCsrfSecret(string $sessionKey): string
+    {
+        if (!isset($_SESSION[$sessionKey])) {
+            $_SESSION[$sessionKey] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION[$sessionKey];
+    }
+
+    /**
+     * Enhanced CSRF token validation with time bucket grace period
+     * 
+     * @param string $sessionKey Session key where secret is stored (default: 'csrf_secret')
+     * @param int $bucketSeconds Time bucket in seconds (default: 3600 = 1 hour)
+     * @param bool $allowPreviousBucket Allow tokens from previous time bucket (default: true)
+     * @return bool True if valid, false otherwise
+     */
+    public function validateCsrfToken(
+        string $sessionKey = 'csrf_secret', 
+        int $bucketSeconds = 3600,
+        bool $allowPreviousBucket = true
+    ): bool
+    {
+        // Get token from request (header or POST parameter)
+        $token = $this->header('X-CSRF-TOKEN') ?? $this->post('_token');
         
-        if (!$token || !isset($_SESSION[$sessionTokenKey])) {
+        if (!$token || !isset($_SESSION[$sessionKey])) {
             return false;
         }
         
-        return hash_equals($_SESSION[$sessionTokenKey], $token);
+        $secret = $_SESSION[$sessionKey];
+        
+        // Check current time bucket
+        $currentTimestamp = floor(time() / $bucketSeconds);
+        $currentToken = hash_hmac('sha256', (string) $currentTimestamp, $secret);
+        
+        if (hash_equals($currentToken, $token)) {
+            return true;
+        }
+        
+        // Check previous time bucket (grace period)
+        if ($allowPreviousBucket) {
+            $previousTimestamp = $currentTimestamp - 1;
+            $previousToken = hash_hmac('sha256', (string) $previousTimestamp, $secret);
+            
+            if (hash_equals($previousToken, $token)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Validate request Origin or Referer header against allowed origins
+     * 
+     * @param array $allowedOrigins Array of allowed origins (e.g., ['https://example.com'])
+     * @return bool True if valid, false otherwise
+     */
+    public function validateOrigin(array $allowedOrigins): bool
+    {
+        // Check Origin header first (preferred for CORS)
+        $origin = $this->header('Origin');
+        if ($origin && in_array($origin, $allowedOrigins, true)) {
+            return true;
+        }
+        
+        // Fallback to Referer header
+        $referer = $this->header('Referer');
+        if ($referer) {
+            $refererOrigin = parse_url($referer, PHP_URL_SCHEME) . '://' . parse_url($referer, PHP_URL_HOST);
+            if (in_array($refererOrigin, $allowedOrigins, true)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Check if request method is unsafe (requires CSRF protection)
+     * 
+     * @return bool True if method is POST, PUT, PATCH, or DELETE
+     */
+    public function isUnsafeMethod(): bool
+    {
+        return in_array($this->method(), ['POST', 'PUT', 'PATCH', 'DELETE'], true);
     }
     
     /**

@@ -59,9 +59,22 @@ validateJson(array $rules): array
 
 // Validate an uploaded file
 validateFile(string $key, array $allowedTypes = [], int $maxSize = 5242880): array|false
+```
 
-// Validate a CSRF token
-validateCsrfToken(string $sessionTokenKey = 'csrf_token'): bool
+### CSRF Protection
+
+```php
+// Generate a CSRF token (time-bucketed HMAC)
+generateCsrfToken(string $sessionKey = 'csrf_secret', int $bucketSeconds = 3600): string
+
+// Validate a CSRF token with time bucket grace period
+validateCsrfToken(string $sessionKey = 'csrf_secret', int $bucketSeconds = 3600, bool $allowPreviousBucket = true): bool
+
+// Validate request Origin or Referer header
+validateOrigin(array $allowedOrigins): bool
+
+// Check if request method is unsafe (POST, PUT, PATCH, DELETE)
+isUnsafeMethod(): bool
 ```
 
 ### Sanitization
