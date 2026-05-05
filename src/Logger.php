@@ -3,62 +3,65 @@
 namespace Stilmark\Base;
 
 use Stilmark\Base\Env;
-use Rollbar\Rollbar;
 
 final class Logger
 {
+    private static ?string $logPath = null;
+
     /**
-     * Initialize error reporting and Rollbar configuration
+     * Initialize error reporting and file-based logging
      */
     public static function init(): void
     {
-        $rollbarEnabled = Env::get('LOG_API_TOKEN') && Env::get('LOG_API') === 'ROLLBAR';
+        $logPath = Env::get('LOG_PATH');
+        
+        if ($logPath) {
+            self::$logPath = rtrim($logPath, '/');
+            
+            if (!is_dir(self::$logPath) && !mkdir(self::$logPath, 0755, true) && !is_dir(self::$logPath)) {
+                throw new \RuntimeException(sprintf('Log directory "%s" could not be created', self::$logPath));
+            }
+        }
 
         ini_set('error_reporting', E_ALL);
-        ini_set('display_errors', $rollbarEnabled ? 0 : 1);
+        ini_set('display_errors', defined('DEV') && DEV ? 1 : 0);
+        ini_set('log_errors', 1);
         
-        if ($rollbarEnabled) {
-            ini_set('log_errors', 0);
-            
-            Rollbar::init([
-                'access_token' => Env::get('LOG_API_TOKEN'),
-                'environment' => Env::get('APP_ENV', 'NONE'),
-                'exception_sample_rates' => [],
-                'error_sample_rates' => [],
-                'include_error_code_context' => true,
-                'include_exception_code_context' => true,
-                'capture_error_stacktraces' => true,
-                'capture_ip' => 'anonymize'
-            ]);
-            
-            // Register error handlers
-            (new \Rollbar\Handlers\ErrorHandler(Rollbar::logger()))->register();
-            (new \Rollbar\Handlers\FatalHandler(Rollbar::logger()))->register();
+        if (self::$logPath) {
+            ini_set('error_log', self::$logPath . '/php_errors.log');
         }
     }
 
     public static function log(
-		string $log = 'log', 
+		string $message = 'log', 
 		string $level = 'info', 
 	    array $data = [], 
     )
     {
-		if (Env::get('LOG_API') === 'ROLLBAR') {
+		$level = strtolower($level);
+		if (!in_array($level, ['debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency'])) {
+			$level = 'info';
+		}
 
-			// Add validation for log levels
-			$level = strtolower($level);
-			if (!in_array($level, ['debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency'])) {
-				$level = 'info';
-			}
+		if (isset($_SESSION['user'])) {
+			$data['person'] = [
+				'id' => $_SESSION['user']['id'] ?? null,
+				'email' => $_SESSION['user']['email'] ?? null
+			];
+		}
 
-			if (isset($_SESSION['user'])) {
-				$data['person'] = [
-					'id' => $_SESSION['user']['id'] ?? null,
-					'email' => $_SESSION['user']['email'] ?? null
-				];
-			}
+		$logEntry = [
+			'timestamp' => date('Y-m-d H:i:s'),
+			'level' => strtoupper($level),
+			'message' => $message,
+			'data' => $data ?: null,
+		];
 
-			Rollbar::log($log, $level, $data);
+		$logLine = json_encode(array_filter($logEntry, fn($v) => $v !== null), JSON_UNESCAPED_SLASHES);
+
+		if (self::$logPath) {
+			$logFile = self::$logPath . '/app.log';
+			file_put_contents($logFile, $logLine . PHP_EOL, FILE_APPEND | LOCK_EX);
 		}
 
 		return true;

@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **Logger class**: Removed Rollbar integration, now uses file-based logging only
+- **Logger::init()**: Configures file-based logging to `LOG_PATH` directory
+- **Logger::log()**: Writes JSON-formatted entries to `app.log`
+- **Environment**: Removed `LOG_API` and `LOG_API_TOKEN` variables
+
+### Removed
+- **Rollbar dependency**: Removed `rollbar/rollbar` from composer.json
+
 ## [1.6.9] - 2025-09-16
 ### Documentation
 - **Request class**: Expanded documentation with a detailed API reference and usage examples.

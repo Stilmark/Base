@@ -1,28 +1,31 @@
 # Logger
 
-Centralized logging functionality with Rollbar integration for error tracking and monitoring.
-
-**Repository:** [rollbar/rollbar-php](https://github.com/rollbar/rollbar-php)
+Centralized file-based logging functionality for error tracking and monitoring.
 
 ## Environment Configuration
 
 ```
-LOG_API=ROLLBAR
-LOG_API_TOKEN=your_rollbar_access_token
 LOG_PATH=/logs
 ```
 
-## Rollbar API Key Setup
-
-To obtain a Rollbar API key:
-
-1. Go to [Rollbar.com](https://rollbar.com/) and create an account
-2. Create a new project or select an existing one
-3. Navigate to **Settings** → **Project Access Tokens**
-4. Copy the **post_server_item** token
-5. Add it to your `.env` file as `LOG_API_TOKEN`
+The `LOG_PATH` should point to your project's logs directory. The logger will create this directory if it doesn't exist.
 
 ## API
+
+### Logger::init()
+
+Initializes error reporting and file-based logging. Should be called early in your application bootstrap.
+
+```php
+Logger::init();
+```
+
+This method:
+- Creates the log directory if it doesn't exist
+- Configures PHP error reporting
+- Redirects PHP errors to `php_errors.log` in the log directory
+
+### Logger::log()
 
 ```php
 Logger::log(string $message, string $level = 'info', array $data = [])
@@ -41,14 +44,33 @@ Logger::log(string $message, string $level = 'info', array $data = [])
 
 ## Features
 
+- **File-based logging**: All logs written to `app.log` in the configured log directory
+- **JSON format**: Each log entry is a JSON object for easy parsing
 - **Automatic user context**: Includes session user data when available
 - **Level validation**: Invalid levels default to 'info'
-- **Rollbar integration**: Seamless error tracking and monitoring
-- **Environment-based**: Only logs to Rollbar when `LOG_API=ROLLBAR`
+- **PHP error capture**: PHP errors redirected to `php_errors.log`
+
+## Log Files
+
+When `LOG_PATH=/logs` is configured:
+
+- **`/logs/app.log`** - Application logs from `Logger::log()` calls
+- **`/logs/php_errors.log`** - PHP errors, warnings, and notices
+
+## Log Format
+
+Each log entry is a JSON object:
+
+```json
+{"timestamp":"2025-09-16 14:30:00","level":"INFO","message":"User login successful","data":{"user_id":123}}
+```
 
 ## Usage Examples
 
 ```php
+// Initialize logging
+Logger::init();
+
 // Basic logging
 Logger::log('User login successful');
 
@@ -82,4 +104,4 @@ When a user session exists (`$_SESSION['user']`), the logger automatically inclu
 ]
 ```
 
-This enables user-specific error tracking in Rollbar.
+This enables user-specific tracking in your log files.
