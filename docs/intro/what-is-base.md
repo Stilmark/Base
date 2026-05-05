@@ -10,7 +10,7 @@ It includes helpers and core components for:
 - **Controllers**: A base controller to extend for application logic.
 - **Response Rendering**: Helpers for sending JSON and CSV responses.
 - **Authentication**: Multi-provider OAuth2 support (e.g., Google) and middleware for protecting routes.
-- **Logging**: PSR-3 compliant logging with built-in Rollbar integration.
+- **Logging**: PSR-3 compliant file-based logging with JSON format.
 - **Helper Utilities**: Static methods for common tasks like string manipulation.
 
 Base is designed to be used directly or as the foundation for [BaseApp](https://github.com/Stilmark/BaseApp).

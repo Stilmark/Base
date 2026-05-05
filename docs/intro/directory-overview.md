@@ -9,7 +9,7 @@ src/
   Controller.php       // Base controller class
   Env.php              // Environment variable loader and accessor
   Helper.php           // Static helper utilities
-  Logger.php           // PSR-3 compliant logger with Rollbar integration
+  Logger.php           // PSR-3 compliant file-based logger
   Render.php           // Response rendering (JSON, CSV, etc.)
   Request.php          // HTTP request handling and validation
   Router.php           // Router with middleware and handler resolution
@@ -22,7 +22,7 @@ src/
 - **Controller** – base class for application controllers.
 - **Env** – loads and manages environment variables from `.env`.
 - **Helper** – provides static utility methods (e.g., string case conversion).
-- **Logger** – PSR-3 compliant logger with built-in Rollbar integration for error tracking.
+- **Logger** – PSR-3 compliant file-based logger with JSON format.
 - **Render** – provides helper methods for rendering JSON and CSV responses.
 - **Request** – provides a unified interface for handling HTTP requests, including input retrieval, validation, and sanitization.
 - **Router** – handles routing, controller/method resolution, and middleware execution.

@@ -18,7 +18,7 @@ A lightweight PHP utility library providing essential functionality for modern w
 - **CSRF Protection**: Time-bucketed CSRF tokens with automatic rotation and origin validation.
 - **Authentication**: Multi-provider OAuth2 support (e.g., Google) with session regeneration and timeout management.
 - **JWT Support**: JSON Web Token generation and validation with configurable claims and expiration.
-- **Logging**: PSR-3 compliant logging with built-in Rollbar integration.
+- **Logging**: PSR-3 compliant file-based logging with JSON format.
 - **Helper Utilities**: Static methods for common tasks like string manipulation.
 
 ## Requirements
@@ -35,7 +35,6 @@ Base relies on the following libraries (installed via Composer):
 - [league/oauth2-client](https://github.com/thephpleague/oauth2-client) – for OAuth2 authentication
 - [league/oauth2-google](https://github.com/thephpleague/oauth2-google) – Google OAuth2 provider
 - [firebase/php-jwt](https://github.com/firebase/php-jwt) – for JWT token generation and validation
-- [rollbar/rollbar](https://github.com/rollbar/rollbar-php) – for error tracking and monitoring
 
 ## Installation
 
@@ -109,7 +108,7 @@ class HomeController extends Controller
 | **AuthMiddleware** | Validates session-based or JWT authentication with idle and absolute timeout management. |
 | **CsrfMiddleware** | Automatic CSRF protection for unsafe HTTP methods with time-bucketed token validation. |
 | **JWT** | JSON Web Token generation and validation. |
-| **Logger** | PSR-3 compliant logger with built-in Rollbar integration. |
+| **Logger** | PSR-3 compliant file-based logger with JSON format. |
 | **Helper** | Provides static utility methods (e.g., string case conversion). |
 
 ## Usage Examples
