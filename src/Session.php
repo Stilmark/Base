@@ -132,47 +132,121 @@ class Session
     
     /**
      * Get session value
+     * Supports dot notation for nested arrays: 'user.company_id'
      * 
-     * @param string $key Session key
+     * @param string $key Session key (supports dot notation)
      * @param mixed $default Default value if key doesn't exist
      * @return mixed
      */
     public static function get(string $key, $default = null)
     {
+        // Handle dot notation
+        if (str_contains($key, '.')) {
+            $keys = explode('.', $key);
+            $value = $_SESSION;
+            
+            foreach ($keys as $k) {
+                if (!is_array($value) || !array_key_exists($k, $value)) {
+                    return $default;
+                }
+                $value = $value[$k];
+            }
+            
+            return $value;
+        }
+        
         return $_SESSION[$key] ?? $default;
     }
     
     /**
      * Set session value
+     * Supports dot notation for nested arrays: 'user.company_id'
      * 
-     * @param string $key Session key
+     * @param string $key Session key (supports dot notation)
      * @param mixed $value Value to store
      * @return void
      */
     public static function set(string $key, $value): void
     {
+        // Handle dot notation
+        if (str_contains($key, '.')) {
+            $keys = explode('.', $key);
+            $target = &$_SESSION;
+            
+            // Navigate to the parent of the final key
+            for ($i = 0; $i < count($keys) - 1; $i++) {
+                $k = $keys[$i];
+                if (!isset($target[$k]) || !is_array($target[$k])) {
+                    $target[$k] = [];
+                }
+                $target = &$target[$k];
+            }
+            
+            $target[end($keys)] = $value;
+            return;
+        }
+        
         $_SESSION[$key] = $value;
     }
     
     /**
      * Check if session key exists
+     * Supports dot notation for nested arrays: 'user.company_id'
      * 
-     * @param string $key Session key
+     * @param string $key Session key (supports dot notation)
      * @return bool
      */
     public static function has(string $key): bool
     {
+        // Handle dot notation
+        if (str_contains($key, '.')) {
+            $keys = explode('.', $key);
+            $parent = $_SESSION;
+            $finalKey = end($keys);
+            $parentKeys = array_slice($keys, 0, -1);
+            
+            // Navigate to parent of final key
+            foreach ($parentKeys as $k) {
+                if (!is_array($parent) || !array_key_exists($k, $parent)) {
+                    return false;
+                }
+                $parent = $parent[$k];
+            }
+            
+            // Check if final key exists and is not null (matching isset() behavior)
+            return is_array($parent) && isset($parent[$finalKey]);
+        }
+        
         return isset($_SESSION[$key]);
     }
     
     /**
      * Remove session key
+     * Supports dot notation for nested arrays: 'user.company_id'
      * 
-     * @param string $key Session key
+     * @param string $key Session key (supports dot notation)
      * @return void
      */
     public static function remove(string $key): void
     {
+        // Handle dot notation
+        if (str_contains($key, '.')) {
+            $keys = explode('.', $key);
+            $target = &$_SESSION;
+            
+            // Navigate to the parent of the final key
+            for ($i = 0; $i < count($keys) - 1; $i++) {
+                $k = $keys[$i];
+                if (!is_array($target) || !array_key_exists($k, $target)) {
+                    return; // Path doesn't exist, nothing to remove
+                }
+                $target = &$target[$k];
+            }
+            
+            unset($target[end($keys)]);
+            return;
+        }
+        
         unset($_SESSION[$key]);
     }
     

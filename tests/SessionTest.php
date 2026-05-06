@@ -170,4 +170,124 @@ class SessionTest extends TestCase
         $this->assertTrue(Session::get('bool'));
         $this->assertNull(Session::get('null'));
     }
+
+    // Dot notation tests
+
+    public function testGetDotNotationNestedValue(): void
+    {
+        $_SESSION['user'] = [
+            'company_id' => 123,
+            'name' => 'John Doe'
+        ];
+        
+        $this->assertEquals(123, Session::get('user.company_id'));
+        $this->assertEquals('John Doe', Session::get('user.name'));
+    }
+
+    public function testGetDotNotationReturnsDefaultForMissing(): void
+    {
+        $_SESSION['user'] = ['company_id' => 123];
+        
+        $this->assertEquals('default', Session::get('user.missing', 'default'));
+        $this->assertEquals('default', Session::get('nonexistent.nested', 'default'));
+    }
+
+    public function testGetDotNotationMultipleLevels(): void
+    {
+        $_SESSION['user'] = [
+            'settings' => [
+                'theme' => 'dark'
+            ]
+        ];
+        
+        $this->assertEquals('dark', Session::get('user.settings.theme'));
+    }
+
+    public function testSetDotNotationCreatesNestedStructure(): void
+    {
+        Session::set('user.company_id', 456);
+        
+        $this->assertEquals(456, $_SESSION['user']['company_id']);
+        $this->assertEquals(456, Session::get('user.company_id'));
+    }
+
+    public function testSetDotNotationMultipleLevels(): void
+    {
+        Session::set('user.settings.theme', 'light');
+        
+        $this->assertEquals('light', $_SESSION['user']['settings']['theme']);
+        $this->assertEquals('light', Session::get('user.settings.theme'));
+    }
+
+    public function testHasDotNotation(): void
+    {
+        $_SESSION['user'] = ['company_id' => 123];
+        
+        $this->assertTrue(Session::has('user.company_id'));
+        $this->assertFalse(Session::has('user.missing'));
+        $this->assertFalse(Session::has('nonexistent.nested'));
+    }
+
+    public function testHasDotNotationMultipleLevels(): void
+    {
+        $_SESSION['user'] = ['settings' => ['theme' => 'dark']];
+        
+        $this->assertTrue(Session::has('user.settings.theme'));
+        $this->assertTrue(Session::has('user.settings'));
+        $this->assertTrue(Session::has('user'));
+        $this->assertFalse(Session::has('user.settings.nonexistent'));
+    }
+
+    public function testHasDotNotationReturnsFalseOnNull(): void
+    {
+        $_SESSION['user'] = ['name' => null];
+        
+        $this->assertFalse(Session::has('user.name'));
+    }
+
+    public function testRemoveDotNotation(): void
+    {
+        $_SESSION['user'] = [
+            'company_id' => 123,
+            'name' => 'John'
+        ];
+        
+        Session::remove('user.company_id');
+        
+        $this->assertFalse(Session::has('user.company_id'));
+        $this->assertTrue(Session::has('user.name'));
+    }
+
+    public function testRemoveDotNotationMultipleLevels(): void
+    {
+        $_SESSION['user'] = [
+            'settings' => [
+                'theme' => 'dark',
+                'lang' => 'en'
+            ]
+        ];
+        
+        Session::remove('user.settings.theme');
+        
+        $this->assertFalse(Session::has('user.settings.theme'));
+        $this->assertTrue(Session::has('user.settings.lang'));
+    }
+
+    public function testRemoveDotNotationNonExistent(): void
+    {
+        $_SESSION['user'] = ['name' => 'John'];
+        
+        // Should not throw error
+        Session::remove('user.nonexistent.nested');
+        
+        $this->assertEquals(['name' => 'John'], $_SESSION['user']);
+    }
+
+    public function testDotNotationWithEmptyKeyParts(): void
+    {
+        Session::set('user..name', 'John');
+        
+        // Empty string key should be created
+        $this->assertEquals('John', $_SESSION['user']['']['name']);
+    }
 }

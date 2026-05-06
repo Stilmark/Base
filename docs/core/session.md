@@ -45,16 +45,16 @@ Session::setLoginTime(string $loginTimeKey = 'login_time'): void
 ### Session Data Management
 
 ```php
-// Get a session value
+// Get a session value (supports dot notation for nested arrays)
 Session::get(string $key, $default = null)
 
-// Set a session value
+// Set a session value (supports dot notation for nested arrays)
 Session::set(string $key, $value): void
 
-// Check if a session key exists
+// Check if a session key exists (supports dot notation for nested arrays)
 Session::has(string $key): bool
 
-// Remove a session key
+// Remove a session key (supports dot notation for nested arrays)
 Session::remove(string $key): void
 ```
 
@@ -109,6 +109,19 @@ Session::set('username', 'john_doe');
 if (Session::has('user_id')) {
     $userId = Session::get('user_id');
 }
+
+// Access nested data with dot notation
+Session::set('user.company_id', 456);
+$companyId = Session::get('user.company_id');      // Returns 456
+$theme = Session::get('user.settings.theme', 'light'); // Returns value or 'light' if not set
+
+// Check nested key exists
+if (Session::has('user.permissions.admin')) {
+    // User has admin permission
+}
+
+// Remove nested key
+Session::remove('user.temp_data');
 
 // Flash a success message
 Session::flash('success', 'Login successful!');
