@@ -19,6 +19,28 @@ final class Helper
         return str_replace(' ', '', ucwords(str_replace('_', ' ', $input)));
     }
 
+    /**
+     * Convert string to camelCase (lowercase first letter)
+     *
+     * @param string $input The string to convert
+     * @return string camelCase string
+     */
+    public static function toCamelCase(string $input): string
+    {
+        return lcfirst(self::snakeToCamel($input));
+    }
+
+    /**
+     * Convert string to snake_case
+     *
+     * @param string $input The string to convert
+     * @return string snake_case string
+     */
+    public static function toSnakeCase(string $input): string
+    {
+        return self::camelToSnake($input);
+    }
+
     // Array utilities
 
     /**
