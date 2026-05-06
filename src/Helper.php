@@ -19,6 +19,71 @@ final class Helper
         return str_replace(' ', '', ucwords(str_replace('_', ' ', $input)));
     }
 
+    // Array utilities
+
+    /**
+     * Keep only specified keys from an array
+     *
+     * @param array $source Source array
+     * @param array $keys Keys to keep
+     * @return array Array with only specified keys
+     */
+    public static function arrayOnly(array $source, array $keys): array
+    {
+        return array_intersect_key($source, array_flip($keys));
+    }
+
+    /**
+     * Remove specified keys from an array
+     *
+     * @param array $source Source array
+     * @param array $keys Keys to remove
+     * @return array Array without specified keys
+     */
+    public static function arrayExcept(array $source, array $keys): array
+    {
+        return array_diff_key($source, array_flip($keys));
+    }
+
+    /**
+     * Get a value from nested array using dot notation
+     *
+     * @param array $array Source array
+     * @param string $key Dot-notation key (e.g., 'user.profile.name')
+     * @param mixed $default Default value if key not found
+     * @return mixed The value or default
+     */
+    public static function arrayGet(array $array, string $key, $default = null)
+    {
+        $keys = explode('.', $key);
+        foreach ($keys as $k) {
+            if (!is_array($array) || !array_key_exists($k, $array)) {
+                return $default;
+            }
+            $array = $array[$k];
+        }
+        return $array;
+    }
+
+    /**
+     * Check if array has a value at dot-notation key
+     *
+     * @param array $array Source array
+     * @param string $key Dot-notation key
+     * @return bool True if key exists
+     */
+    public static function arrayHas(array $array, string $key): bool
+    {
+        $keys = explode('.', $key);
+        foreach ($keys as $k) {
+            if (!is_array($array) || !array_key_exists($k, $array)) {
+                return false;
+            }
+            $array = $array[$k];
+        }
+        return true;
+    }
+
     // Array key conversion
 
     public static function arrayKeysCamelToSnake(array $array): array

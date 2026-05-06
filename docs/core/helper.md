@@ -98,6 +98,102 @@ $result = Helper::arrayKeysCamelToSnake($data);
 // ]
 ```
 
+#### `arrayOnly(array $source, array $keys): array`
+
+Keep only specified keys from an array.
+
+**Parameters:**
+- `$source` (array) - The source array
+- `$keys` (array) - Keys to keep
+
+**Returns:** Array with only the specified keys
+
+**Example:**
+```php
+use Stilmark\Base\Helper;
+
+$data = ['name' => 'John', 'email' => 'john@example.com', 'password' => 'secret'];
+$result = Helper::arrayOnly($data, ['name', 'email']);
+// Returns: ['name' => 'John', 'email' => 'john@example.com']
+```
+
+#### `arrayExcept(array $source, array $keys): array`
+
+Remove specified keys from an array.
+
+**Parameters:**
+- `$source` (array) - The source array
+- `$keys` (array) - Keys to remove
+
+**Returns:** Array without the specified keys
+
+**Example:**
+```php
+use Stilmark\Base\Helper;
+
+$data = ['name' => 'John', 'email' => 'john@example.com', 'password' => 'secret'];
+$result = Helper::arrayExcept($data, ['password']);
+// Returns: ['name' => 'John', 'email' => 'john@example.com']
+```
+
+#### `arrayGet(array $array, string $key, $default = null)`
+
+Get a value from nested array using dot notation.
+
+**Parameters:**
+- `$array` (array) - The source array
+- `$key` (string) - Dot-notation key (e.g., 'user.profile.name')
+- `$default` (mixed) - Default value if key not found
+
+**Returns:** The value or default
+
+**Example:**
+```php
+use Stilmark\Base\Helper;
+
+$data = [
+    'user' => [
+        'profile' => [
+            'name' => 'John',
+            'email' => 'john@example.com'
+        ]
+    ]
+];
+
+$name = Helper::arrayGet($data, 'user.profile.name');
+// Returns: 'John'
+
+$phone = Helper::arrayGet($data, 'user.profile.phone', 'N/A');
+// Returns: 'N/A'
+```
+
+#### `arrayHas(array $array, string $key): bool`
+
+Check if array has a value at dot-notation key.
+
+**Parameters:**
+- `$array` (array) - The source array
+- `$key` (string) - Dot-notation key
+
+**Returns:** True if key exists
+
+**Example:**
+```php
+use Stilmark\Base\Helper;
+
+$data = [
+    'user' => [
+        'profile' => [
+            'name' => 'John'
+        ]
+    ]
+];
+
+if (Helper::arrayHas($data, 'user.profile.name')) {
+    // Key exists
+}
+```
+
 ## Cookie Handling
 
 Secure methods for managing HTTP cookies with security best practices.
