@@ -251,6 +251,16 @@ class Session
     }
     
     /**
+     * Get all session variables
+     * 
+     * @return array All session data
+     */
+    public static function all(): array
+    {
+        return $_SESSION ?? [];
+    }
+    
+    /**
      * Flash data (set for next request only)
      * 
      * @param string $key Flash key

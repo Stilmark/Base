@@ -56,6 +56,9 @@ Session::has(string $key): bool
 
 // Remove a session key (supports dot notation for nested arrays)
 Session::remove(string $key): void
+
+// Get all session variables
+Session::all(): array
 ```
 
 ### Flash Data
