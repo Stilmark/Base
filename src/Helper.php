@@ -46,36 +46,42 @@ final class Helper
     /**
      * Keep only specified keys from an array
      *
-     * @param array $source Source array
+     * @param mixed $source Source array
      * @param array $keys Keys to keep
-     * @return array Array with only specified keys
+     * @return array Array with only specified keys, or empty array if source is not an array
      */
-    public static function arrayOnly(array $source, array $keys): array
+    public static function arrayOnly($source, array $keys): array
     {
+        if (!is_array($source)) {
+            return [];
+        }
         return array_intersect_key($source, array_flip($keys));
     }
 
     /**
      * Remove specified keys from an array
      *
-     * @param array $source Source array
+     * @param mixed $source Source array
      * @param array $keys Keys to remove
-     * @return array Array without specified keys
+     * @return array Array without specified keys, or empty array if source is not an array
      */
-    public static function arrayExcept(array $source, array $keys): array
+    public static function arrayExcept($source, array $keys): array
     {
+        if (!is_array($source)) {
+            return [];
+        }
         return array_diff_key($source, array_flip($keys));
     }
 
     /**
      * Get a value from nested array using dot notation
      *
-     * @param array $array Source array
+     * @param mixed $array Source array
      * @param string $key Dot-notation key (e.g., 'user.profile.name')
      * @param mixed $default Default value if key not found
      * @return mixed The value or default
      */
-    public static function arrayGet(array $array, string $key, $default = null)
+    public static function arrayGet($array, string $key, $default = null)
     {
         $keys = explode('.', $key);
         foreach ($keys as $k) {
@@ -90,11 +96,11 @@ final class Helper
     /**
      * Check if array has a value at dot-notation key
      *
-     * @param array $array Source array
+     * @param mixed $array Source array
      * @param string $key Dot-notation key
      * @return bool True if key exists
      */
-    public static function arrayHas(array $array, string $key): bool
+    public static function arrayHas($array, string $key): bool
     {
         $keys = explode('.', $key);
         foreach ($keys as $k) {
@@ -108,8 +114,18 @@ final class Helper
 
     // Array key conversion
 
-    public static function arrayKeysCamelToSnake(array $array): array
+    /**
+     * Recursively converts all array keys from camelCase to snake_case
+     *
+     * @param mixed $array Source array
+     * @return array Array with snake_case keys, or empty array if input is not an array
+     */
+    public static function arrayKeysCamelToSnake($array): array
     {
+        if (!is_array($array)) {
+            return [];
+        }
+
         $converted = [];
         foreach ($array as $key => $value) {
             $newKey = self::camelToSnake($key);
