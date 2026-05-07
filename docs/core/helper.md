@@ -1,12 +1,13 @@
 # Helper
 
-Utility functions for common web development tasks including string conversions, array utilities, and secure cookie handling.
+Utility functions for common web development tasks including string conversions, JSON handling, array utilities, and secure cookie handling.
 
 ## Overview
 
-The `Helper` class provides static utility methods organized into three categories:
+The `Helper` class provides static utility methods organized into four categories:
 
 - **String Conversion**: Convert between camelCase, PascalCase, and snake_case
+- **JSON Utilities**: Safe JSON encoding/decoding with defaults
 - **Array Utilities**: Filter, access, and manipulate arrays
 - **Cookie Handling**: Secure cookie management with best practices
 
@@ -92,6 +93,75 @@ Helper::snakeToCamel('first_name');
 
 Helper::snakeToCamel('user_account_id');
 // Returns: 'UserAccountId'
+```
+
+---
+
+## JSON Utilities
+
+Safe JSON encoding and decoding with sensible defaults.
+
+### `jsonDecode(mixed $json, array $default = []): array`
+
+Safely decode JSON string to array. Returns default value on null, empty, or invalid JSON.
+
+**Parameters:**
+- `$json` (mixed) - JSON string or null
+- `$default` (array) - Default value if decode fails (default: empty array)
+
+**Returns:** Decoded array or default
+
+**Example:**
+```php
+$company = ['billing' => '{"card": "1234"}'];
+
+$billing = Helper::jsonDecode($company['billing'] ?? null);
+// Returns: ['card' => '1234']
+
+$settings = Helper::jsonDecode($company['settings'] ?? null, ['theme' => 'light']);
+// Returns: ['theme' => 'light'] (default because settings is null)
+```
+
+### `jsonEncode(mixed $data, bool $pretty = false): string`
+
+Encode data to JSON string. Returns empty string on failure.
+
+**Parameters:**
+- `$data` (mixed) - Data to encode
+- `$pretty` (bool) - Pretty print output (default: false)
+
+**Returns:** JSON string or empty string on failure
+
+**Example:**
+```php
+$data = ['name' => 'John', 'email' => 'john@example.com'];
+
+Helper::jsonEncode($data);
+// Returns: '{"name":"John","email":"john@example.com"}'
+
+Helper::jsonEncode($data, true);
+// Returns formatted JSON with indentation
+```
+
+### `isJson(mixed $string): bool`
+
+Check if a string is valid JSON.
+
+**Parameters:**
+- `$string` (mixed) - String to check
+
+**Returns:** True if valid JSON
+
+**Example:**
+```php
+Helper::isJson('{"name": "John"}');
+// Returns: true
+
+Helper::isJson('not json');
+// Returns: false
+
+Helper::isJson(null);
+// Returns: false
 ```
 
 ---

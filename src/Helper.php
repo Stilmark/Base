@@ -41,6 +41,55 @@ final class Helper
         return self::camelToSnake($input);
     }
 
+    // JSON utilities
+
+    /**
+     * Safely decode JSON string to array
+     *
+     * @param mixed $json JSON string or null
+     * @param array $default Default value if decode fails
+     * @return array Decoded array or default
+     */
+    public static function jsonDecode($json, array $default = []): array
+    {
+        if (empty($json) || !is_string($json)) {
+            return $default;
+        }
+
+        $decoded = json_decode($json, true);
+        return json_last_error() === JSON_ERROR_NONE ? $decoded : $default;
+    }
+
+    /**
+     * Encode array to JSON string
+     *
+     * @param mixed $data Data to encode
+     * @param bool $pretty Pretty print output
+     * @return string JSON string or empty string on failure
+     */
+    public static function jsonEncode($data, bool $pretty = false): string
+    {
+        $options = $pretty ? JSON_PRETTY_PRINT : 0;
+        $json = json_encode($data, $options);
+        return $json !== false ? $json : '';
+    }
+
+    /**
+     * Check if string is valid JSON
+     *
+     * @param mixed $string String to check
+     * @return bool True if valid JSON
+     */
+    public static function isJson($string): bool
+    {
+        if (empty($string) || !is_string($string)) {
+            return false;
+        }
+
+        json_decode($string);
+        return json_last_error() === JSON_ERROR_NONE;
+    }
+
     // Array utilities
 
     /**
