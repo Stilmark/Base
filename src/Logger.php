@@ -18,8 +18,11 @@ final class Logger
         if ($logPath) {
             self::$logPath = rtrim($logPath, '/');
             
-            if (!is_dir(self::$logPath) && !mkdir(self::$logPath, 0775, true) && !is_dir(self::$logPath)) {
-                throw new \RuntimeException(sprintf('Log directory "%s" could not be created', self::$logPath));
+            if (!is_dir(self::$logPath)) {
+                if (!mkdir(self::$logPath, 0775, true) && !is_dir(self::$logPath)) {
+                    throw new \RuntimeException(sprintf('Log directory "%s" could not be created', self::$logPath));
+                }
+                chmod(self::$logPath, 0775);
             }
         }
 
@@ -62,7 +65,11 @@ final class Logger
 
 		if (self::$logPath) {
 			$logFile = self::$logPath . '/' . $filename;
+			$isNew = !file_exists($logFile);
 			file_put_contents($logFile, $logLine . PHP_EOL, FILE_APPEND | LOCK_EX);
+			if ($isNew) {
+				chmod($logFile, 0664);
+			}
 		}
 
 		return true;
