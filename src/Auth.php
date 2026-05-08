@@ -46,8 +46,8 @@ final class Auth
     public function callout()
     {
         $authUrl = $this->provider->getAuthorizationUrl();
-        $_SESSION['oauth2state'] = $this->provider->getState();
-        $_SESSION['oauth2provider'] = $this->providerType;
+        Session::set('oauth2state', $this->provider->getState());
+        Session::set('oauth2provider', $this->providerType);
         header('Location: ' . $authUrl);
         exit;
     }
@@ -57,8 +57,8 @@ final class Auth
         $state = $request->get('state');
         $code = $request->get('code');
         
-        if (!$state || $state !== ($_SESSION['oauth2state'] ?? null)) {
-            unset($_SESSION['oauth2state']);
+        if (!$state || $state !== Session::get('oauth2state')) {
+            Session::remove('oauth2state');
             throw new \Exception('Invalid state');
         }
 
@@ -79,21 +79,22 @@ final class Auth
         Session::regenerate(true);
         
         // Store comprehensive session data in auth array
-        $_SESSION[$this->authSessionName] = [
+        Session::set($this->authSessionName, [
             'access_token' => $token->getToken(),
             'token_expires' => $token->getExpires(),
             'refresh_token' => $token->getRefreshToken(),
             'user' => $user->toArray(),
             'provider' => $this->providerType,
             'auth_time' => time()
-        ];
+        ]);
         
         // Set session timestamps for timeout tracking
         Session::setLoginTime('login_time');
         Session::updateActivity('last_activity');
         
         // Clean up temporary session data
-        unset($_SESSION['oauth2state'], $_SESSION['oauth2provider']);
+        Session::remove('oauth2state');
+        Session::remove('oauth2provider');
         
         return [
             'status' => 'success',
@@ -104,7 +105,7 @@ final class Auth
 
     public function logout()
     {
-        unset($_SESSION[$this->authSessionName]);
+        Session::remove($this->authSessionName);
         Session::destroy();
     }
 }

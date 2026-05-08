@@ -2,8 +2,6 @@
 
 namespace Stilmark\Base;
 
-use Stilmark\Base\Env;
-
 final class Logger
 {
     private static ?string $logPath = null;
@@ -47,10 +45,10 @@ final class Logger
 			$level = 'info';
 		}
 
-		if (isset($_SESSION['user'])) {
+		if (Session::has('user')) {
 			$data['person'] = [
-				'id' => $_SESSION['user']['id'] ?? null,
-				'email' => $_SESSION['user']['email'] ?? null
+				'id' => Session::get('user.id'),
+				'email' => Session::get('user.email')
 			];
 		}
 

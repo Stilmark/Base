@@ -44,7 +44,7 @@ class AuthMiddleware
         }
 
         // Otherwise, check session-based authentication
-        if (!isset($_SESSION[$this->authSessionKey])) {
+        if (!Session::has($this->authSessionKey)) {
             return false;
         }
         
@@ -64,7 +64,7 @@ class AuthMiddleware
         Session::updateActivity('last_activity');
         
         // Allow projects to add custom validation
-        return $this->validateSession($_SESSION[$this->authSessionKey]);
+        return $this->validateSession(Session::get($this->authSessionKey));
     }
     
     /**
@@ -87,7 +87,7 @@ class AuthMiddleware
      */
     protected function clearAuthSession(): void
     {
-        unset($_SESSION[$this->authSessionKey]);
+        Session::remove($this->authSessionKey);
     }
 
     /**
@@ -107,7 +107,7 @@ class AuthMiddleware
             $decoded = Jwt::validate($token);
             
             // Store the decoded token in the session for later use
-            $_SESSION[$this->authSessionKey]['jwt'] = $decoded;
+            Session::set($this->authSessionKey . '.jwt', $decoded);
             
             return true;
         } catch (Exception $e) {

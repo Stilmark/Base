@@ -452,10 +452,10 @@ final class Request
      */
     private function getOrCreateCsrfSecret(string $sessionKey): string
     {
-        if (!isset($_SESSION[$sessionKey])) {
-            $_SESSION[$sessionKey] = bin2hex(random_bytes(32));
+        if (!Session::has($sessionKey)) {
+            Session::set($sessionKey, bin2hex(random_bytes(32)));
         }
-        return $_SESSION[$sessionKey];
+        return Session::get($sessionKey);
     }
 
     /**
@@ -475,11 +475,11 @@ final class Request
         // Get token from request (header or POST parameter)
         $token = $this->header('X-CSRF-TOKEN') ?? $this->post('_token');
         
-        if (!$token || !isset($_SESSION[$sessionKey])) {
+        if (!$token || !Session::has($sessionKey)) {
             return false;
         }
         
-        $secret = $_SESSION[$sessionKey];
+        $secret = Session::get($sessionKey);
         
         // Check current time bucket
         $currentTimestamp = floor(time() / $bucketSeconds);
