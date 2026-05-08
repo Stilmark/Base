@@ -18,7 +18,7 @@ final class Logger
         if ($logPath) {
             self::$logPath = rtrim($logPath, '/');
             
-            if (!is_dir(self::$logPath) && !mkdir(self::$logPath, 0755, true) && !is_dir(self::$logPath)) {
+            if (!is_dir(self::$logPath) && !mkdir(self::$logPath, 0775, true) && !is_dir(self::$logPath)) {
                 throw new \RuntimeException(sprintf('Log directory "%s" could not be created', self::$logPath));
             }
         }
@@ -35,7 +35,8 @@ final class Logger
     public static function log(
 		string $message = 'log', 
 		string $level = 'info', 
-	    array $data = [], 
+	    array $data = [],
+	    string $filename = 'app.log',
     )
     {
 		$level = strtolower($level);
@@ -60,7 +61,7 @@ final class Logger
 		$logLine = json_encode(array_filter($logEntry, fn($v) => $v !== null), JSON_UNESCAPED_SLASHES);
 
 		if (self::$logPath) {
-			$logFile = self::$logPath . '/app.log';
+			$logFile = self::$logPath . '/' . $filename;
 			file_put_contents($logFile, $logLine . PHP_EOL, FILE_APPEND | LOCK_EX);
 		}
 
