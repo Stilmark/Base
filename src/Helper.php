@@ -161,6 +161,100 @@ final class Helper
         return true;
     }
 
+    /**
+     * Find first element matching a callback
+     *
+     * @param mixed $array Source array
+     * @param callable $callback Function that returns true for match
+     * @param mixed $default Default value if not found
+     * @return mixed First matching element or default
+     */
+    public static function arrayFind($array, callable $callback, $default = null)
+    {
+        if (!is_array($array)) {
+            return $default;
+        }
+        foreach ($array as $key => $value) {
+            if ($callback($value, $key)) {
+                return $value;
+            }
+        }
+        return $default;
+    }
+
+    /**
+     * Find last element matching a callback
+     *
+     * @param mixed $array Source array
+     * @param callable $callback Function that returns true for match
+     * @param mixed $default Default value if not found
+     * @return mixed Last matching element or default
+     */
+    public static function arrayFindLast($array, callable $callback, $default = null)
+    {
+        if (!is_array($array)) {
+            return $default;
+        }
+        $result = $default;
+        foreach ($array as $key => $value) {
+            if ($callback($value, $key)) {
+                $result = $value;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Find all elements matching a callback (reindexed)
+     *
+     * @param mixed $array Source array
+     * @param callable $callback Function that returns true for match
+     * @return array All matching elements (reindexed)
+     */
+    public static function arrayFindAll($array, callable $callback): array
+    {
+        if (!is_array($array)) {
+            return [];
+        }
+        return array_values(array_filter($array, $callback, ARRAY_FILTER_USE_BOTH));
+    }
+
+    /**
+     * Find key of first element matching a callback
+     *
+     * @param mixed $array Source array
+     * @param callable $callback Function that returns true for match
+     * @return int|string|null Key of first match or null
+     */
+    public static function arrayFindKey($array, callable $callback)
+    {
+        if (!is_array($array)) {
+            return null;
+        }
+        foreach ($array as $key => $value) {
+            if ($callback($value, $key)) {
+                return $key;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Extract a single column/property from each element
+     *
+     * @param mixed $array Source array
+     * @param string $key Key to extract
+     * @param string|null $indexKey Optional key to use as index
+     * @return array Plucked values
+     */
+    public static function arrayPluck($array, string $key, ?string $indexKey = null): array
+    {
+        if (!is_array($array)) {
+            return [];
+        }
+        return array_column($array, $key, $indexKey);
+    }
+
     // Array key conversion
 
     /**

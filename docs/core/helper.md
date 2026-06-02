@@ -258,6 +258,123 @@ if (Helper::arrayHas($data, 'user.profile.name')) {
 }
 ```
 
+### `arrayFind(mixed $array, callable $callback, mixed $default = null): mixed`
+
+Find first element matching a callback.
+
+**Parameters:**
+- `$array` (mixed) - Source array
+- `$callback` (callable) - Function receiving `($value, $key)`, returns true for match
+- `$default` (mixed) - Default value if not found
+
+**Returns:** First matching element or default
+
+**Example:**
+```php
+$roles = [
+    '1' => ['id' => '1', 'name' => 'Agency', 'class' => 'agency'],
+    '2' => ['id' => '2', 'name' => 'End-client', 'class' => 'client'],
+];
+
+$role = Helper::arrayFind($roles, fn($r) => $r['class'] === 'agency');
+// Returns: ['id' => '1', 'name' => 'Agency', 'class' => 'agency']
+
+$missing = Helper::arrayFind($roles, fn($r) => $r['class'] === 'unknown', ['id' => '0', 'name' => 'Default']);
+// Returns: ['id' => '0', 'name' => 'Default']
+```
+
+### `arrayFindLast(mixed $array, callable $callback, mixed $default = null): mixed`
+
+Find last element matching a callback.
+
+**Parameters:**
+- `$array` (mixed) - Source array
+- `$callback` (callable) - Function receiving `($value, $key)`, returns true for match
+- `$default` (mixed) - Default value if not found
+
+**Returns:** Last matching element or default
+
+**Example:**
+```php
+$logs = [
+    ['level' => 'info', 'msg' => 'Started'],
+    ['level' => 'error', 'msg' => 'Failed'],
+    ['level' => 'error', 'msg' => 'Retry failed'],
+];
+
+$lastError = Helper::arrayFindLast($logs, fn($l) => $l['level'] === 'error');
+// Returns: ['level' => 'error', 'msg' => 'Retry failed']
+```
+
+### `arrayFindAll(mixed $array, callable $callback): array`
+
+Find all elements matching a callback (reindexed).
+
+**Parameters:**
+- `$array` (mixed) - Source array
+- `$callback` (callable) - Function receiving `($value, $key)`, returns true for match
+
+**Returns:** All matching elements (reindexed from 0)
+
+**Example:**
+```php
+$users = [
+    ['name' => 'John', 'active' => true],
+    ['name' => 'Jane', 'active' => false],
+    ['name' => 'Bob', 'active' => true],
+];
+
+$active = Helper::arrayFindAll($users, fn($u) => $u['active']);
+// Returns: [['name' => 'John', 'active' => true], ['name' => 'Bob', 'active' => true]]
+```
+
+### `arrayFindKey(mixed $array, callable $callback): int|string|null`
+
+Find key of first element matching a callback.
+
+**Parameters:**
+- `$array` (mixed) - Source array
+- `$callback` (callable) - Function receiving `($value, $key)`, returns true for match
+
+**Returns:** Key of first match or null
+
+**Example:**
+```php
+$roles = [
+    'admin' => ['level' => 10],
+    'editor' => ['level' => 5],
+    'viewer' => ['level' => 1],
+];
+
+$key = Helper::arrayFindKey($roles, fn($r) => $r['level'] === 5);
+// Returns: 'editor'
+```
+
+### `arrayPluck(mixed $array, string $key, ?string $indexKey = null): array`
+
+Extract a single column/property from each element.
+
+**Parameters:**
+- `$array` (mixed) - Source array
+- `$key` (string) - Key to extract
+- `$indexKey` (string|null) - Optional key to use as index
+
+**Returns:** Plucked values
+
+**Example:**
+```php
+$users = [
+    ['id' => 1, 'name' => 'John'],
+    ['id' => 2, 'name' => 'Jane'],
+];
+
+Helper::arrayPluck($users, 'name');
+// Returns: ['John', 'Jane']
+
+Helper::arrayPluck($users, 'name', 'id');
+// Returns: [1 => 'John', 2 => 'Jane']
+```
+
 ### `arrayKeysCamelToSnake(array $array): array`
 
 Recursively converts all array keys from camelCase to snake_case.
